@@ -20,6 +20,7 @@
             min-height: 100vh;
             overflow: hidden;
             touch-action: none;
+            overscroll-behavior: none;
         }
 
         .container {
@@ -93,6 +94,7 @@
             font-weight: bold;
             cursor: pointer;
             transition: background 0.15s;
+            touch-action: manipulation;
         }
 
         .btn:hover {
@@ -137,7 +139,6 @@
             align-items: center;
             border-radius: 6px;
             font-weight: bold;
-            transition: top 0.12s ease, left 0.12s ease;
             z-index: 10;
         }
 
@@ -246,7 +247,7 @@
             </div>
         </div>
         <div class="game-board" id="game-board">
-            <div class="grid-bg">
+            <div class="grid-bg" id="grid-bg">
                 <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
                 <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
                 <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
@@ -269,8 +270,10 @@
 
         const SIZE = 4;
         const WIN_VALUE = 4096;
+        const ANIM_DURATION = 150;
 
         let grid, score, bestScore, previousState, won, over, keepPlaying;
+        let animating = false;
 
         const tileContainer = document.getElementById('tile-container');
         const scoreEl = document.getElementById('score');
@@ -281,6 +284,7 @@
         const newGameBtn = document.getElementById('new-game-btn');
         const undoBtn = document.getElementById('undo-btn');
         const gameBoard = document.getElementById('game-board');
+        const gridBg = document.getElementById('grid-bg');
 
         // --- Helpers ---
         function emptyGrid() {
@@ -308,22 +312,35 @@
         }
 
         // --- Core move logic ---
-        // Slides a single row to the left, returns { row, score, moved, merges }
         function slideRow(row) {
-            let arr = row.filter(v => v !== 0);
-            let sc = 0;
-            const merges = [];
-            for (let i = 0; i < arr.length - 1; i++) {
-                if (arr[i] === arr[i + 1]) {
-                    arr[i] *= 2;
-                    sc += arr[i];
-                    merges.push(i);
-                    arr.splice(i + 1, 1);
-                }
+            const items = [];
+            for (let i = 0; i < row.length; i++) {
+                if (row[i] !== 0) items.push({ val: row[i], from: i });
             }
-            while (arr.length < SIZE) arr.push(0);
-            const moved = row.some((v, i) => v !== arr[i]);
-            return { row: arr, score: sc, moved, merges };
+
+            const result = Array(SIZE).fill(0);
+            let sc = 0;
+            const moves = [];
+            const mergeTargets = [];
+            let pos = 0;
+
+            for (let i = 0; i < items.length; i++) {
+                if (i < items.length - 1 && items[i].val === items[i + 1].val) {
+                    result[pos] = items[i].val * 2;
+                    sc += result[pos];
+                    moves.push({ from: items[i].from, to: pos });
+                    moves.push({ from: items[i + 1].from, to: pos });
+                    mergeTargets.push(pos);
+                    i++;
+                } else {
+                    result[pos] = items[i].val;
+                    moves.push({ from: items[i].from, to: pos });
+                }
+                pos++;
+            }
+
+            const moved = row.some((v, i) => v !== result[i]);
+            return { row: result, score: sc, moved, moves, mergeTargets };
         }
 
         function rotateGrid(g, times) {
@@ -338,11 +355,27 @@
             return result;
         }
 
+        // Inverse-rotate a position: convert rotated-space coords back to original-space
+        function inverseRotatePos(r, c, rot) {
+            let nr = r, nc = c;
+            for (let t = 0; t < (4 - rot) % 4; t++) {
+                const tmp = nc;
+                nc = SIZE - 1 - nr;
+                nr = tmp;
+            }
+            return [nr, nc];
+        }
+
         // dir: 0=left, 1=up, 2=right, 3=down
+        // Correct rotation counts: left=0, up=3, right=2, down=1
+        const DIR_ROTATIONS = [0, 3, 2, 1];
+
         function move(g, dir) {
-            let rotated = rotateGrid(g, dir);
+            const rot = DIR_ROTATIONS[dir];
+            let rotated = rotateGrid(g, rot);
             let totalScore = 0;
             let moved = false;
+            const allMoves = [];
             const mergedPositions = [];
 
             for (let r = 0; r < SIZE; r++) {
@@ -350,24 +383,22 @@
                 if (result.moved) moved = true;
                 totalScore += result.score;
                 rotated[r] = result.row;
-                result.merges.forEach(c => mergedPositions.push([r, c]));
+
+                for (const m of result.moves) {
+                    const [fromR, fromC] = inverseRotatePos(r, m.from, rot);
+                    const [toR, toC] = inverseRotatePos(r, m.to, rot);
+                    allMoves.push({ fromR, fromC, toR, toC });
+                }
+
+                for (const col of result.mergeTargets) {
+                    const [origR, origC] = inverseRotatePos(r, col, rot);
+                    mergedPositions.push([origR, origC]);
+                }
             }
 
-            // Rotate back
-            const finalGrid = rotateGrid(rotated, (4 - dir) % 4);
+            const finalGrid = rotateGrid(rotated, (4 - rot) % 4);
 
-            // Rotate merged positions back
-            const finalMerges = mergedPositions.map(([r, c]) => {
-                let nr = r, nc = c;
-                for (let t = 0; t < (4 - dir) % 4; t++) {
-                    const tmp = nc;
-                    nc = SIZE - 1 - nr;
-                    nr = tmp;
-                }
-                return [nr, nc];
-            });
-
-            return { grid: finalGrid, score: totalScore, moved, merges: finalMerges };
+            return { grid: finalGrid, score: totalScore, moved, merges: mergedPositions, moves: allMoves };
         }
 
         function canMove(g) {
@@ -388,14 +419,13 @@
         }
 
         // --- Rendering ---
-        let tileSize, gapSize, boardPadding;
+        let tileSize, gapSize;
 
         function computeSizes() {
-            const board = gameBoard.getBoundingClientRect();
-            boardPadding = parseFloat(getComputedStyle(gameBoard).paddingLeft);
-            const inner = board.width - boardPadding * 2;
-            gapSize = inner > 400 ? 10 : 8;
-            tileSize = (inner - gapSize * (SIZE - 1)) / SIZE;
+            const rect = tileContainer.getBoundingClientRect();
+            gapSize = parseFloat(getComputedStyle(gridBg).columnGap) || 10;
+            const available = Math.min(rect.width, rect.height);
+            tileSize = (available - gapSize * (SIZE - 1)) / SIZE;
         }
 
         function tilePos(row, col) {
@@ -411,6 +441,22 @@
             return tileSize * 0.30;
         }
 
+        function createTileEl(val, r, c, extraClass) {
+            const pos = tilePos(r, c);
+            const el = document.createElement('div');
+            const tileClass = val <= 8192 ? 'tile-' + val : 'tile-8192';
+            el.className = 'tile ' + tileClass + (extraClass ? ' ' + extraClass : '');
+            el.textContent = val;
+            el.style.width = tileSize + 'px';
+            el.style.height = tileSize + 'px';
+            el.style.top = pos.top + 'px';
+            el.style.left = pos.left + 'px';
+            el.style.fontSize = fontSizeForValue(val) + 'px';
+            el.style.lineHeight = tileSize + 'px';
+            return el;
+        }
+
+        // Instant render (no animation) — used for undo, new game, load
         function renderTiles(newTile, merges) {
             tileContainer.innerHTML = '';
             computeSizes();
@@ -420,26 +466,49 @@
                     const val = grid[r][c];
                     if (val === 0) continue;
 
-                    const pos = tilePos(r, c);
-                    const el = document.createElement('div');
-
-                    const tileClass = val <= 8192 ? `tile-${val}` : 'tile-8192';
                     let extraClass = '';
-                    if (newTile && newTile[0] === r && newTile[1] === c) extraClass = ' tile-new';
-                    if (merges && merges.some(m => m[0] === r && m[1] === c)) extraClass = ' tile-merged';
+                    if (newTile && newTile[0] === r && newTile[1] === c) extraClass = 'tile-new';
+                    if (merges && merges.some(function (m) { return m[0] === r && m[1] === c; })) extraClass = 'tile-merged';
 
-                    el.className = `tile ${tileClass}${extraClass}`;
-                    el.textContent = val;
-                    el.style.width = tileSize + 'px';
-                    el.style.height = tileSize + 'px';
-                    el.style.top = pos.top + 'px';
-                    el.style.left = pos.left + 'px';
-                    el.style.fontSize = fontSizeForValue(val) + 'px';
-                    el.style.lineHeight = tileSize + 'px';
-
-                    tileContainer.appendChild(el);
+                    tileContainer.appendChild(createTileEl(val, r, c, extraClass));
                 }
             }
+        }
+
+        // Animated render — tiles slide from old positions to new positions
+        function animateMove(oldGrid, movements, newTile, merges) {
+            animating = true;
+            tileContainer.innerHTML = '';
+            computeSizes();
+
+            var tileEls = [];
+            var transitionVal = 'top ' + ANIM_DURATION + 'ms ease-in-out, left ' + ANIM_DURATION + 'ms ease-in-out';
+
+            // Create tiles at their OLD positions
+            for (var i = 0; i < movements.length; i++) {
+                var m = movements[i];
+                var val = oldGrid[m.fromR][m.fromC];
+                var el = createTileEl(val, m.fromR, m.fromC, '');
+                el.style.transition = transitionVal;
+                tileContainer.appendChild(el);
+                tileEls.push({ el: el, toR: m.toR, toC: m.toC });
+            }
+
+            // Force reflow so browser registers initial positions
+            tileContainer.offsetHeight;
+
+            // Animate to NEW positions
+            for (var j = 0; j < tileEls.length; j++) {
+                var pos = tilePos(tileEls[j].toR, tileEls[j].toC);
+                tileEls[j].el.style.top = pos.top + 'px';
+                tileEls[j].el.style.left = pos.left + 'px';
+            }
+
+            // After animation completes, do final render with merged/new tile effects
+            setTimeout(function () {
+                renderTiles(newTile, merges);
+                animating = false;
+            }, ANIM_DURATION);
         }
 
         function updateScore() {
@@ -469,6 +538,7 @@
             over = false;
             keepPlaying = false;
             previousState = null;
+            animating = false;
             hideOverlay();
 
             addRandomTile(grid);
@@ -504,26 +574,30 @@
 
         function handleMove(dir) {
             if (over && !keepPlaying) return;
+            if (animating) return;
 
             const result = move(grid, dir);
             if (!result.moved) return;
 
-            // Save for undo
-            previousState = { grid: cloneGrid(grid), score };
+            // Save for undo (before applying move)
+            const oldGrid = cloneGrid(grid);
+            previousState = { grid: oldGrid, score };
 
             grid = result.grid;
             score += result.score;
 
             const newTile = addRandomTile(grid);
             updateScore();
-            renderTiles(newTile ? newTile : null, result.merges);
+
+            // Animate tiles sliding, then show new tile
+            animateMove(oldGrid, result.moves, newTile, result.merges);
 
             if (!won && hasWon(grid)) {
                 won = true;
-                showOverlay('你赢了!', true);
+                setTimeout(function () { showOverlay('你赢了!', true); }, ANIM_DURATION + 50);
             } else if (!canMove(grid)) {
                 over = true;
-                showOverlay('游戏结束!', false);
+                setTimeout(function () { showOverlay('游戏结束!', false); }, ANIM_DURATION + 50);
             }
 
             saveState();
@@ -531,6 +605,7 @@
 
         function undo() {
             if (!previousState) return;
+            if (animating) return;
             grid = previousState.grid;
             score = previousState.score;
             previousState = null;
@@ -628,7 +703,7 @@
 
         // Handle resize
         window.addEventListener('resize', function () {
-            renderTiles(null, null);
+            if (!animating) renderTiles(null, null);
         });
 
         // --- Init ---
