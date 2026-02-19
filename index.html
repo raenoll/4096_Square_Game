@@ -260,7 +260,7 @@
             </div>
         </div>
         <div class="instructions">
-            <strong>操作方式:</strong> 使用 <strong>方向键</strong> 或 <strong>WASD</strong> 滑动方块，也支持触屏滑动。
+            <strong>操作方式:</strong> 使用 <strong>方向键</strong> / <strong>WASD</strong> / <strong>触屏滑动</strong> / <strong>手柄 (十字键/摇杆)</strong> 控制方块。手柄 <strong>B</strong> 键撤销，<strong>A</strong> 键确认。
         </div>
     </div>
 
@@ -711,6 +711,86 @@
             }
         });
         undoBtn.addEventListener('click', undo);
+
+        // --- Gamepad support (PS5 / Xbox / generic controllers) ---
+        // Standard mapping: D-pad = buttons 12-15, A/Cross = 0, B/Circle = 1
+        // Left stick: axes[0] horizontal, axes[1] vertical
+        var gamepadConnected = false;
+        var gamepadPrevButtons = {};
+        var gamepadPrevAxis = { x: 0, y: 0 };
+        var STICK_THRESHOLD = 0.5;
+
+        window.addEventListener('gamepadconnected', function () {
+            gamepadConnected = true;
+        });
+        window.addEventListener('gamepaddisconnected', function () {
+            gamepadConnected = false;
+        });
+
+        function pollGamepad() {
+            if (!gamepadConnected) {
+                requestAnimationFrame(pollGamepad);
+                return;
+            }
+
+            var gamepads = navigator.getGamepads();
+            for (var gi = 0; gi < gamepads.length; gi++) {
+                var gp = gamepads[gi];
+                if (!gp || !gp.connected) continue;
+
+                // D-pad (buttons 12=up, 13=down, 14=left, 15=right)
+                var dpadMap = { 12: 1, 13: 3, 14: 0, 15: 2 };
+                for (var btn in dpadMap) {
+                    var pressed = gp.buttons[btn] && gp.buttons[btn].pressed;
+                    var key = gi + '_' + btn;
+                    if (pressed && !gamepadPrevButtons[key]) {
+                        handleMove(dpadMap[btn]);
+                    }
+                    gamepadPrevButtons[key] = pressed;
+                }
+
+                // Left stick
+                var ax = gp.axes[0] || 0;
+                var ay = gp.axes[1] || 0;
+                var prevAx = gamepadPrevAxis.x;
+                var prevAy = gamepadPrevAxis.y;
+
+                if (Math.abs(ax) > Math.abs(ay) && Math.abs(ax) > STICK_THRESHOLD) {
+                    if (Math.abs(prevAx) <= STICK_THRESHOLD) {
+                        handleMove(ax > 0 ? 2 : 0);
+                    }
+                } else if (Math.abs(ay) > STICK_THRESHOLD) {
+                    if (Math.abs(prevAy) <= STICK_THRESHOLD) {
+                        handleMove(ay > 0 ? 3 : 1);
+                    }
+                }
+                gamepadPrevAxis.x = ax;
+                gamepadPrevAxis.y = ay;
+
+                // A/Cross (button 0) → confirm / new game when overlay is shown
+                var aPressed = gp.buttons[0] && gp.buttons[0].pressed;
+                var aKey = gi + '_0';
+                if (aPressed && !gamepadPrevButtons[aKey]) {
+                    if (overlay.classList.contains('active')) {
+                        overlayBtn.click();
+                    }
+                }
+                gamepadPrevButtons[aKey] = aPressed;
+
+                // B/Circle (button 1) → undo
+                var bPressed = gp.buttons[1] && gp.buttons[1].pressed;
+                var bKey = gi + '_1';
+                if (bPressed && !gamepadPrevButtons[bKey]) {
+                    undo();
+                }
+                gamepadPrevButtons[bKey] = bPressed;
+
+                break; // Use first connected gamepad only
+            }
+
+            requestAnimationFrame(pollGamepad);
+        }
+        requestAnimationFrame(pollGamepad);
 
         // Handle resize
         window.addEventListener('resize', function () {
