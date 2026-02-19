@@ -419,26 +419,37 @@
         }
 
         // --- Rendering ---
-        let tileSize, gapSize;
+        // Read tile dimensions directly from actual rendered grid cells
+        // to guarantee alignment across all browsers (WebKit, Blink, etc.)
+        let tileSizeW, tileSizeH, gapW, gapH, originX, originY;
 
         function computeSizes() {
-            const rect = tileContainer.getBoundingClientRect();
-            gapSize = parseFloat(getComputedStyle(gridBg).columnGap) || 10;
-            const available = Math.min(rect.width, rect.height);
-            tileSize = (available - gapSize * (SIZE - 1)) / SIZE;
+            var cells = gridBg.children;
+            var containerRect = tileContainer.getBoundingClientRect();
+            var c0 = cells[0].getBoundingClientRect();
+            var c1 = cells[1].getBoundingClientRect();
+            var c4 = cells[4].getBoundingClientRect();
+
+            tileSizeW = c0.width;
+            tileSizeH = c0.height;
+            gapW = c1.left - c0.right;
+            gapH = c4.top - c0.bottom;
+            originX = c0.left - containerRect.left;
+            originY = c0.top - containerRect.top;
         }
 
         function tilePos(row, col) {
             return {
-                top: row * (tileSize + gapSize),
-                left: col * (tileSize + gapSize),
+                top: originY + row * (tileSizeH + gapH),
+                left: originX + col * (tileSizeW + gapW),
             };
         }
 
         function fontSizeForValue(val) {
-            if (val < 100) return tileSize * 0.45;
-            if (val < 1000) return tileSize * 0.38;
-            return tileSize * 0.30;
+            var s = Math.min(tileSizeW, tileSizeH);
+            if (val < 100) return s * 0.45;
+            if (val < 1000) return s * 0.38;
+            return s * 0.30;
         }
 
         function createTileEl(val, r, c, extraClass) {
@@ -447,12 +458,12 @@
             const tileClass = val <= 8192 ? 'tile-' + val : 'tile-8192';
             el.className = 'tile ' + tileClass + (extraClass ? ' ' + extraClass : '');
             el.textContent = val;
-            el.style.width = tileSize + 'px';
-            el.style.height = tileSize + 'px';
+            el.style.width = tileSizeW + 'px';
+            el.style.height = tileSizeH + 'px';
             el.style.top = pos.top + 'px';
             el.style.left = pos.left + 'px';
             el.style.fontSize = fontSizeForValue(val) + 'px';
-            el.style.lineHeight = tileSize + 'px';
+            el.style.lineHeight = tileSizeH + 'px';
             return el;
         }
 
