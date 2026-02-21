@@ -329,6 +329,10 @@
             line-height: 1.8;
         }
 
+        .controls-panel {
+            display: contents;
+        }
+
         @media (max-width: 520px) {
             .container { padding: 10px; }
             .title { font-size: 48px; }
@@ -337,29 +341,98 @@
             .tile-container { top: 8px; left: 8px; right: 8px; bottom: 8px; }
             .settings-page { padding: 10px; }
         }
+
+        @media (orientation: landscape) and (max-height: 500px) {
+            body {
+                align-items: flex-start;
+                overflow-y: auto;
+            }
+
+            .container {
+                display: flex;
+                flex-direction: row;
+                max-width: 100%;
+                padding: 8px;
+                gap: 12px;
+                align-items: flex-start;
+            }
+
+            .controls-panel {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                min-width: 120px;
+                max-width: 200px;
+                flex-shrink: 0;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-bottom: 8px;
+            }
+
+            .title { font-size: 36px; }
+
+            .scores {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .score-box {
+                padding: 4px 8px;
+                min-width: auto;
+            }
+
+            .score-box .value { font-size: 18px; }
+
+            .sub-header {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-bottom: 0;
+                gap: 6px;
+            }
+
+            .subtitle { font-size: 13px; }
+            .buttons { flex-wrap: wrap; }
+            .btn { padding: 6px 10px; font-size: 12px; }
+
+            .game-board {
+                width: auto;
+                height: calc(100vh - 16px);
+                aspect-ratio: 1;
+                flex-shrink: 1;
+            }
+
+            .game-board { padding: 6px; }
+            .grid-bg { gap: 6px; }
+            .tile-container { top: 6px; left: 6px; right: 6px; bottom: 6px; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <div class="title">4096</div>
-            <div class="scores">
-                <div class="score-box">
-                    <div class="label" id="score-label">Score</div>
-                    <div class="value" id="score">0</div>
-                </div>
-                <div class="score-box">
-                    <div class="label" id="best-label">Best</div>
-                    <div class="value" id="best-score">0</div>
+        <div class="controls-panel">
+            <div class="header">
+                <div class="title">4096</div>
+                <div class="scores">
+                    <div class="score-box">
+                        <div class="label" id="score-label">Score</div>
+                        <div class="value" id="score">0</div>
+                    </div>
+                    <div class="score-box">
+                        <div class="label" id="best-label">Best</div>
+                        <div class="value" id="best-score">0</div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="sub-header">
-            <div class="subtitle" id="subtitle">Merge tiles to reach <strong>4096</strong>!</div>
-            <div class="buttons">
-                <button class="btn" id="undo-btn">Undo</button>
-                <button class="btn" id="new-game-btn">New Game</button>
-                <button class="btn btn-icon" id="settings-btn" title="Settings">⚙</button>
+            <div class="sub-header">
+                <div class="subtitle" id="subtitle">Merge tiles to reach <strong>4096</strong>!</div>
+                <div class="buttons">
+                    <button class="btn" id="undo-btn">Undo</button>
+                    <button class="btn" id="new-game-btn">New Game</button>
+                    <button class="btn btn-icon" id="settings-btn" title="Settings">⚙</button>
+                </div>
             </div>
         </div>
         <div class="game-board" id="game-board">
