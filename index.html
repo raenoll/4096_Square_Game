@@ -1321,9 +1321,13 @@
         }
         requestAnimationFrame(pollGamepad);
 
-        // Handle resize
+        // Handle resize — debounce to let CSS layout settle after orientation change
+        var resizeTimer;
         window.addEventListener('resize', function () {
-            if (!animating) renderTiles(null, null);
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function () {
+                if (!animating) renderTiles(null, null);
+            }, 150);
         });
 
         // --- Init ---
