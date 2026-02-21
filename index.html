@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -104,6 +104,12 @@
 
         .btn:hover {
             background: #9f8b77;
+        }
+
+        .btn-icon {
+            padding: 10px 14px;
+            font-size: 18px;
+            line-height: 1;
         }
 
         .game-board {
@@ -212,12 +218,115 @@
             background: rgba(237, 194, 46, 0.5);
         }
 
-        .instructions {
-            margin-top: 16px;
-            color: #776e65;
+        /* ===== Settings Overlay ===== */
+        .settings-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #faf8ef;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .settings-overlay.active {
+            display: block;
+        }
+
+        .settings-page {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        .settings-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .settings-back {
+            background: #8f7a66;
+            color: #f9f6f2;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 16px;
             font-size: 14px;
-            line-height: 1.6;
-            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.15s;
+            margin-right: 16px;
+            touch-action: manipulation;
+        }
+
+        .settings-back:hover {
+            background: #9f8b77;
+        }
+
+        .settings-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #776e65;
+        }
+
+        .settings-section {
+            margin-bottom: 28px;
+        }
+
+        .settings-section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #776e65;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #bbada0;
+        }
+
+        .language-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .language-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(238, 228, 218, 0.5);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #776e65;
+            transition: background 0.15s;
+            border: 2px solid transparent;
+        }
+
+        .language-item:hover {
+            background: rgba(238, 228, 218, 0.8);
+        }
+
+        .language-item.selected {
+            background: #8f7a66;
+            color: #f9f6f2;
+            border-color: #776e65;
+        }
+
+        .language-item .check {
+            display: none;
+            font-size: 18px;
+        }
+
+        .language-item.selected .check {
+            display: inline;
+        }
+
+        .instructions-text {
+            color: #776e65;
+            font-size: 15px;
+            line-height: 1.8;
         }
 
         @media (max-width: 520px) {
@@ -226,6 +335,7 @@
             .game-board { padding: 8px; }
             .grid-bg { gap: 8px; }
             .tile-container { top: 8px; left: 8px; right: 8px; bottom: 8px; }
+            .settings-page { padding: 10px; }
         }
     </style>
 </head>
@@ -235,20 +345,21 @@
             <div class="title">4096</div>
             <div class="scores">
                 <div class="score-box">
-                    <div class="label">Score</div>
+                    <div class="label" id="score-label">Score</div>
                     <div class="value" id="score">0</div>
                 </div>
                 <div class="score-box">
-                    <div class="label">Best</div>
+                    <div class="label" id="best-label">Best</div>
                     <div class="value" id="best-score">0</div>
                 </div>
             </div>
         </div>
         <div class="sub-header">
-            <div class="subtitle">合并方块，达到 <strong>4096</strong>!</div>
+            <div class="subtitle" id="subtitle">Merge tiles to reach <strong>4096</strong>!</div>
             <div class="buttons">
-                <button class="btn" id="undo-btn">撤销</button>
-                <button class="btn" id="new-game-btn">新游戏</button>
+                <button class="btn" id="undo-btn">Undo</button>
+                <button class="btn" id="new-game-btn">New Game</button>
+                <button class="btn btn-icon" id="settings-btn" title="Settings">⚙</button>
             </div>
         </div>
         <div class="game-board" id="game-board">
@@ -261,11 +372,26 @@
             <div class="tile-container" id="tile-container"></div>
             <div class="overlay" id="overlay">
                 <div class="overlay-message" id="overlay-message"></div>
-                <button class="btn" id="overlay-btn">再来一局</button>
+                <button class="btn" id="overlay-btn">Try Again</button>
             </div>
         </div>
-        <div class="instructions">
-            <strong>操作方式:</strong> 使用 <strong>方向键</strong> / <strong>WASD</strong> / <strong>触屏滑动</strong> / <strong>手柄 (十字键/摇杆)</strong> 控制方块。手柄 <strong>B</strong> 键撤销，<strong>A</strong> 键确认。
+    </div>
+
+    <!-- Settings Overlay -->
+    <div class="settings-overlay" id="settings-overlay">
+        <div class="settings-page">
+            <div class="settings-header">
+                <button class="settings-back" id="settings-back">← Back</button>
+                <div class="settings-title" id="settings-title">Settings</div>
+            </div>
+            <div class="settings-section">
+                <div class="settings-section-title" id="language-section-title">Language</div>
+                <div class="language-list" id="language-list"></div>
+            </div>
+            <div class="settings-section">
+                <div class="settings-section-title" id="how-to-play-title">How to Play</div>
+                <div class="instructions-text" id="instructions-content"></div>
+            </div>
         </div>
     </div>
 
@@ -273,6 +399,321 @@
     (function () {
         'use strict';
 
+        // ===== I18N =====
+        var LANG_LIST = [
+            { code: 'en',    name: 'English' },
+            { code: 'zh-CN', name: '简体中文' },
+            { code: 'zh-TW', name: '繁體中文' },
+            { code: 'ja',    name: '日本語' },
+            { code: 'ko',    name: '한국어' },
+            { code: 'es',    name: 'Español' },
+            { code: 'fr',    name: 'Français' },
+            { code: 'de',    name: 'Deutsch' },
+            { code: 'pt',    name: 'Português' },
+            { code: 'ru',    name: 'Русский' },
+            { code: 'ar',    name: 'العربية' },
+            { code: 'it',    name: 'Italiano' }
+        ];
+
+        var i18n = {
+            en: {
+                score: 'Score',
+                best: 'Best',
+                subtitle: 'Merge tiles to reach <strong>4096</strong>!',
+                undo: 'Undo',
+                newGame: 'New Game',
+                gameOver: 'Game Over!',
+                youWin: 'You Win!',
+                playAgain: 'Try Again',
+                keepPlaying: 'Keep Playing',
+                settings: 'Settings',
+                language: 'Language',
+                howToPlay: 'How to Play',
+                back: 'Back',
+                instructions: '<strong>Controls:</strong> Use <strong>Arrow Keys</strong> / <strong>WASD</strong> / <strong>Touch Swipe</strong> / <strong>Gamepad (D-pad/Stick)</strong> to move tiles. Gamepad <strong>B</strong> to undo, <strong>A</strong> to confirm.'
+            },
+            'zh-CN': {
+                score: '分数',
+                best: '最佳',
+                subtitle: '合并方块，达到 <strong>4096</strong>！',
+                undo: '撤销',
+                newGame: '新游戏',
+                gameOver: '游戏结束!',
+                youWin: '你赢了!',
+                playAgain: '再来一局',
+                keepPlaying: '继续游戏',
+                settings: '设置',
+                language: '语言设置',
+                howToPlay: '玩法说明',
+                back: '返回',
+                instructions: '<strong>操作方式:</strong> 使用 <strong>方向键</strong> / <strong>WASD</strong> / <strong>触屏滑动</strong> / <strong>手柄 (十字键/摇杆)</strong> 控制方块。手柄 <strong>B</strong> 键撤销，<strong>A</strong> 键确认。'
+            },
+            'zh-TW': {
+                score: '分數',
+                best: '最佳',
+                subtitle: '合併方塊，達到 <strong>4096</strong>！',
+                undo: '撤銷',
+                newGame: '新遊戲',
+                gameOver: '遊戲結束!',
+                youWin: '你贏了!',
+                playAgain: '再來一局',
+                keepPlaying: '繼續遊戲',
+                settings: '設定',
+                language: '語言設定',
+                howToPlay: '玩法說明',
+                back: '返回',
+                instructions: '<strong>操作方式:</strong> 使用 <strong>方向鍵</strong> / <strong>WASD</strong> / <strong>觸控滑動</strong> / <strong>手把 (十字鍵/搖桿)</strong> 控制方塊。手把 <strong>B</strong> 鍵撤銷，<strong>A</strong> 鍵確認。'
+            },
+            ja: {
+                score: 'スコア',
+                best: 'ベスト',
+                subtitle: 'タイルを合わせて <strong>4096</strong> を目指そう！',
+                undo: '戻す',
+                newGame: '新規ゲーム',
+                gameOver: 'ゲームオーバー!',
+                youWin: 'クリア!',
+                playAgain: 'もう一度',
+                keepPlaying: '続ける',
+                settings: '設定',
+                language: '言語',
+                howToPlay: '遊び方',
+                back: '戻る',
+                instructions: '<strong>操作方法:</strong> <strong>矢印キー</strong> / <strong>WASD</strong> / <strong>タッチスワイプ</strong> / <strong>ゲームパッド (十字キー/スティック)</strong> でタイルを動かします。ゲームパッド <strong>B</strong> で元に戻す、<strong>A</strong> で確認。'
+            },
+            ko: {
+                score: '점수',
+                best: '최고',
+                subtitle: '타일을 합쳐 <strong>4096</strong>을 만드세요!',
+                undo: '되돌리기',
+                newGame: '새 게임',
+                gameOver: '게임 오버!',
+                youWin: '승리!',
+                playAgain: '다시하기',
+                keepPlaying: '계속하기',
+                settings: '설정',
+                language: '언어',
+                howToPlay: '게임 방법',
+                back: '뒤로',
+                instructions: '<strong>조작 방법:</strong> <strong>방향키</strong> / <strong>WASD</strong> / <strong>터치 스와이프</strong> / <strong>게임패드 (십자키/스틱)</strong>로 타일을 이동합니다. 게임패드 <strong>B</strong>로 되돌리기, <strong>A</strong>로 확인.'
+            },
+            es: {
+                score: 'Puntos',
+                best: 'Mejor',
+                subtitle: '¡Combina fichas para llegar a <strong>4096</strong>!',
+                undo: 'Deshacer',
+                newGame: 'Nuevo juego',
+                gameOver: '¡Fin del juego!',
+                youWin: '¡Ganaste!',
+                playAgain: 'Intentar de nuevo',
+                keepPlaying: 'Seguir jugando',
+                settings: 'Ajustes',
+                language: 'Idioma',
+                howToPlay: 'Cómo jugar',
+                back: 'Volver',
+                instructions: '<strong>Controles:</strong> Usa las <strong>Teclas de dirección</strong> / <strong>WASD</strong> / <strong>Deslizar en pantalla</strong> / <strong>Mando (cruceta/joystick)</strong> para mover las fichas. Mando <strong>B</strong> para deshacer, <strong>A</strong> para confirmar.'
+            },
+            fr: {
+                score: 'Score',
+                best: 'Meilleur',
+                subtitle: 'Fusionnez les tuiles pour atteindre <strong>4096</strong> !',
+                undo: 'Annuler',
+                newGame: 'Nouvelle partie',
+                gameOver: 'Partie terminée !',
+                youWin: 'Vous avez gagné !',
+                playAgain: 'Rejouer',
+                keepPlaying: 'Continuer',
+                settings: 'Paramètres',
+                language: 'Langue',
+                howToPlay: 'Comment jouer',
+                back: 'Retour',
+                instructions: '<strong>Commandes :</strong> Utilisez les <strong>Touches fléchées</strong> / <strong>WASD</strong> / <strong>Glisser sur l\'écran</strong> / <strong>Manette (croix directionnelle/joystick)</strong> pour déplacer les tuiles. Manette <strong>B</strong> pour annuler, <strong>A</strong> pour confirmer.'
+            },
+            de: {
+                score: 'Punkte',
+                best: 'Beste',
+                subtitle: 'Verbinde Kacheln, um <strong>4096</strong> zu erreichen!',
+                undo: 'Rückgängig',
+                newGame: 'Neues Spiel',
+                gameOver: 'Spiel vorbei!',
+                youWin: 'Du hast gewonnen!',
+                playAgain: 'Nochmal',
+                keepPlaying: 'Weiterspielen',
+                settings: 'Einstellungen',
+                language: 'Sprache',
+                howToPlay: 'Spielanleitung',
+                back: 'Zurück',
+                instructions: '<strong>Steuerung:</strong> Verwende <strong>Pfeiltasten</strong> / <strong>WASD</strong> / <strong>Wischen</strong> / <strong>Gamepad (Steuerkreuz/Stick)</strong> zum Bewegen der Kacheln. Gamepad <strong>B</strong> zum Rückgängigmachen, <strong>A</strong> zum Bestätigen.'
+            },
+            pt: {
+                score: 'Pontos',
+                best: 'Melhor',
+                subtitle: 'Combine as peças para chegar a <strong>4096</strong>!',
+                undo: 'Desfazer',
+                newGame: 'Novo jogo',
+                gameOver: 'Fim de jogo!',
+                youWin: 'Você venceu!',
+                playAgain: 'Tentar novamente',
+                keepPlaying: 'Continuar',
+                settings: 'Configurações',
+                language: 'Idioma',
+                howToPlay: 'Como jogar',
+                back: 'Voltar',
+                instructions: '<strong>Controles:</strong> Use as <strong>Setas</strong> / <strong>WASD</strong> / <strong>Deslize na tela</strong> / <strong>Controle (direcional/analógico)</strong> para mover as peças. Controle <strong>B</strong> para desfazer, <strong>A</strong> para confirmar.'
+            },
+            ru: {
+                score: 'Счёт',
+                best: 'Лучший',
+                subtitle: 'Объединяйте плитки, чтобы получить <strong>4096</strong>!',
+                undo: 'Отменить',
+                newGame: 'Новая игра',
+                gameOver: 'Игра окончена!',
+                youWin: 'Вы выиграли!',
+                playAgain: 'Заново',
+                keepPlaying: 'Продолжить',
+                settings: 'Настройки',
+                language: 'Язык',
+                howToPlay: 'Как играть',
+                back: 'Назад',
+                instructions: '<strong>Управление:</strong> Используйте <strong>Стрелки</strong> / <strong>WASD</strong> / <strong>Свайп</strong> / <strong>Геймпад (крестовина/стик)</strong> для перемещения плиток. Геймпад <strong>B</strong> — отмена, <strong>A</strong> — подтверждение.'
+            },
+            ar: {
+                score: 'النقاط',
+                best: 'الأفضل',
+                subtitle: 'ادمج المربعات للوصول إلى <strong>4096</strong>!',
+                undo: 'تراجع',
+                newGame: 'لعبة جديدة',
+                gameOver: 'انتهت اللعبة!',
+                youWin: 'فزت!',
+                playAgain: 'أعد المحاولة',
+                keepPlaying: 'استمر',
+                settings: 'الإعدادات',
+                language: 'اللغة',
+                howToPlay: 'طريقة اللعب',
+                back: 'رجوع',
+                instructions: '<strong>التحكم:</strong> استخدم <strong>مفاتيح الأسهم</strong> / <strong>WASD</strong> / <strong>السحب على الشاشة</strong> / <strong>ذراع التحكم (الأزرار الاتجاهية/العصا)</strong> لتحريك المربعات. زر <strong>B</strong> للتراجع، زر <strong>A</strong> للتأكيد.'
+            },
+            it: {
+                score: 'Punti',
+                best: 'Migliore',
+                subtitle: 'Unisci le tessere per raggiungere <strong>4096</strong>!',
+                undo: 'Annulla',
+                newGame: 'Nuova partita',
+                gameOver: 'Game Over!',
+                youWin: 'Hai vinto!',
+                playAgain: 'Riprova',
+                keepPlaying: 'Continua',
+                settings: 'Impostazioni',
+                language: 'Lingua',
+                howToPlay: 'Come giocare',
+                back: 'Indietro',
+                instructions: '<strong>Comandi:</strong> Usa i <strong>Tasti freccia</strong> / <strong>WASD</strong> / <strong>Scorri sullo schermo</strong> / <strong>Controller (croce direzionale/stick)</strong> per muovere le tessere. Controller <strong>B</strong> per annullare, <strong>A</strong> per confermare.'
+            }
+        };
+
+        var currentLang = 'en';
+
+        function t(key) {
+            return i18n[currentLang][key] || i18n.en[key] || key;
+        }
+
+        // Detect language: check saved → browser languages → OS language → fallback to English
+        function detectLanguage() {
+            // 1. Check saved preference
+            var saved = localStorage.getItem('game4096_lang');
+            if (saved && i18n[saved]) return saved;
+
+            // 2. Check browser/OS languages
+            var languages = navigator.languages || [navigator.language || navigator.userLanguage || ''];
+            for (var i = 0; i < languages.length; i++) {
+                var lang = languages[i];
+                // Exact match
+                if (i18n[lang]) return lang;
+                // Handle zh variants
+                if (lang === 'zh-Hans' || lang.indexOf('zh-Hans') === 0 || lang === 'zh-CN') return 'zh-CN';
+                if (lang === 'zh-Hant' || lang.indexOf('zh-Hant') === 0 || lang === 'zh-TW' || lang === 'zh-HK') return 'zh-TW';
+                if (lang === 'zh') return 'zh-CN';
+                // Prefix match (e.g. "en-US" → "en", "ja-JP" → "ja")
+                var prefix = lang.split('-')[0];
+                if (i18n[prefix]) return prefix;
+            }
+
+            // 3. Fallback to English
+            return 'en';
+        }
+
+        // Apply language to all UI elements
+        function applyLanguage(langCode) {
+            currentLang = langCode;
+            localStorage.setItem('game4096_lang', langCode);
+            document.documentElement.lang = langCode;
+
+            // Game UI
+            document.getElementById('score-label').textContent = t('score');
+            document.getElementById('best-label').textContent = t('best');
+            document.getElementById('subtitle').innerHTML = t('subtitle');
+            document.getElementById('undo-btn').textContent = t('undo');
+            document.getElementById('new-game-btn').textContent = t('newGame');
+
+            // Overlay — update based on current game state
+            if (over && !won) {
+                overlayMessage.textContent = t('gameOver');
+                overlayBtn.textContent = t('playAgain');
+            } else if (won && !keepPlaying) {
+                overlayMessage.textContent = t('youWin');
+                overlayBtn.textContent = t('keepPlaying');
+            } else {
+                overlayBtn.textContent = t('playAgain');
+            }
+
+            // Settings UI
+            document.getElementById('settings-title').textContent = t('settings');
+            document.getElementById('settings-back').textContent = '← ' + t('back');
+            document.getElementById('language-section-title').textContent = t('language');
+            document.getElementById('how-to-play-title').textContent = t('howToPlay');
+            document.getElementById('instructions-content').innerHTML = t('instructions');
+            document.getElementById('settings-btn').title = t('settings');
+
+            renderLanguageList();
+        }
+
+        function renderLanguageList() {
+            var list = document.getElementById('language-list');
+            list.innerHTML = '';
+            for (var i = 0; i < LANG_LIST.length; i++) {
+                var lang = LANG_LIST[i];
+                var item = document.createElement('div');
+                item.className = 'language-item' + (lang.code === currentLang ? ' selected' : '');
+                item.setAttribute('data-lang', lang.code);
+                item.innerHTML = '<span>' + lang.name + '</span><span class="check">✓</span>';
+                item.addEventListener('click', (function (code) {
+                    return function () {
+                        applyLanguage(code);
+                    };
+                })(lang.code));
+                list.appendChild(item);
+            }
+        }
+
+        // ===== Settings =====
+        var settingsOpen = false;
+        var settingsOverlay = document.getElementById('settings-overlay');
+        var settingsBtn = document.getElementById('settings-btn');
+        var settingsBackBtn = document.getElementById('settings-back');
+
+        function openSettings() {
+            settingsOpen = true;
+            settingsOverlay.classList.add('active');
+        }
+
+        function closeSettings() {
+            settingsOpen = false;
+            settingsOverlay.classList.remove('active');
+        }
+
+        settingsBtn.addEventListener('click', openSettings);
+        settingsBackBtn.addEventListener('click', closeSettings);
+
+        // ===== Game Logic =====
         const SIZE = 4;
         const WIN_VALUE = 4096;
         const ANIM_DURATION = 150;
@@ -424,8 +865,6 @@
         }
 
         // --- Rendering ---
-        // Read tile dimensions directly from actual rendered grid cells
-        // to guarantee alignment across all browsers (WebKit, Blink, etc.)
         let tileSizeW, tileSizeH, gapW, gapH, originX, originY;
 
         function computeSizes() {
@@ -539,7 +978,7 @@
         function showOverlay(msg, isWin) {
             overlayMessage.textContent = msg;
             overlay.className = 'overlay active' + (isWin ? ' win' : '');
-            overlayBtn.textContent = isWin ? '继续游戏' : '再来一局';
+            overlayBtn.textContent = isWin ? t('keepPlaying') : t('playAgain');
         }
 
         function hideOverlay() {
@@ -581,7 +1020,7 @@
                     previousState = null;
                     updateScore();
                     renderTiles(null, null);
-                    if (over) showOverlay('游戏结束!', false);
+                    if (over) showOverlay(t('gameOver'), false);
                     return true;
                 } catch (e) { /* ignore */ }
             }
@@ -591,6 +1030,7 @@
         function handleMove(dir) {
             if (over && !keepPlaying) return;
             if (animating) return;
+            if (settingsOpen) return;
 
             const result = move(grid, dir);
             if (!result.moved) return;
@@ -610,10 +1050,10 @@
 
             if (!won && hasWon(grid)) {
                 won = true;
-                setTimeout(function () { showOverlay('你赢了!', true); }, ANIM_DURATION + 50);
+                setTimeout(function () { showOverlay(t('youWin'), true); }, ANIM_DURATION + 50);
             } else if (!canMove(grid)) {
                 over = true;
-                setTimeout(function () { showOverlay('游戏结束!', false); }, ANIM_DURATION + 50);
+                setTimeout(function () { showOverlay(t('gameOver'), false); }, ANIM_DURATION + 50);
             }
 
             saveState();
@@ -636,6 +1076,8 @@
         // --- Input handling ---
         // Keyboard
         document.addEventListener('keydown', function (e) {
+            if (settingsOpen) return;
+
             const keyMap = {
                 ArrowLeft: 0, a: 0, A: 0,
                 ArrowUp: 1, w: 1, W: 1,
@@ -660,6 +1102,7 @@
         const SWIPE_THRESHOLD = 30;
 
         gameBoard.addEventListener('touchstart', function (e) {
+            if (settingsOpen) return;
             if (e.touches.length === 1) {
                 touchStartX = e.touches[0].clientX;
                 touchStartY = e.touches[0].clientY;
@@ -667,6 +1110,7 @@
         }, { passive: true });
 
         gameBoard.addEventListener('touchend', function (e) {
+            if (settingsOpen) return;
             if (touchStartX == null) return;
             const dx = e.changedTouches[0].clientX - touchStartX;
             const dy = e.changedTouches[0].clientY - touchStartY;
@@ -684,6 +1128,7 @@
         // Mouse drag support for desktop
         let mouseDown = false;
         gameBoard.addEventListener('mousedown', function (e) {
+            if (settingsOpen) return;
             mouseDown = true;
             touchStartX = e.clientX;
             touchStartY = e.clientY;
@@ -718,8 +1163,6 @@
         undoBtn.addEventListener('click', undo);
 
         // --- Gamepad support (PS5 / Xbox / generic controllers) ---
-        // Standard mapping: D-pad = buttons 12-15, A/Cross = 0, B/Circle = 1
-        // Left stick: axes[0] horizontal, axes[1] vertical
         var gamepadConnected = false;
         var gamepadPrevButtons = {};
         var gamepadPrevAxis = { x: 0, y: 0 };
@@ -734,6 +1177,11 @@
 
         function pollGamepad() {
             if (!gamepadConnected) {
+                requestAnimationFrame(pollGamepad);
+                return;
+            }
+
+            if (settingsOpen) {
                 requestAnimationFrame(pollGamepad);
                 return;
             }
@@ -804,6 +1252,11 @@
 
         // --- Init ---
         bestScore = parseInt(localStorage.getItem('best4096')) || 0;
+
+        // Detect and apply language before loading game state
+        currentLang = detectLanguage();
+        applyLanguage(currentLang);
+
         if (!loadState()) {
             newGame();
         }
