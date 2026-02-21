@@ -23,6 +23,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            min-height: 100dvh;
             overflow: hidden;
             touch-action: none;
             overscroll-behavior: none;
@@ -400,6 +401,8 @@
             .game-board {
                 width: auto;
                 height: calc(100vh - 16px);
+                height: calc(100dvh - 16px);
+                height: calc(var(--app-vh, 100dvh) - 16px);
                 aspect-ratio: 1;
                 flex-shrink: 1;
             }
@@ -1324,6 +1327,13 @@
         });
 
         // --- Init ---
+        // Set real viewport height CSS variable for mobile browser address bar
+        function updateAppVH() {
+            document.documentElement.style.setProperty('--app-vh', window.innerHeight + 'px');
+        }
+        updateAppVH();
+        window.addEventListener('resize', updateAppVH);
+
         bestScore = parseInt(localStorage.getItem('best4096')) || 0;
 
         // Detect and apply language before loading game state
