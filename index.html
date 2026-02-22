@@ -330,6 +330,79 @@
             line-height: 1.8;
         }
 
+        /* Settings main menu items */
+        .settings-menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            background: rgba(238, 228, 218, 0.5);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: #776e65;
+            transition: background 0.15s;
+            margin-bottom: 8px;
+        }
+
+        .settings-menu-item:hover {
+            background: rgba(238, 228, 218, 0.8);
+        }
+
+        .menu-arrow {
+            font-size: 20px;
+            color: #bbada0;
+        }
+
+        /* Sub-pages hidden by default */
+        .settings-sub-page {
+            display: none;
+        }
+
+        .settings-sub-page.active {
+            display: block;
+        }
+
+        /* Sound toggle items */
+        .sound-toggle-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sound-toggle-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(238, 228, 218, 0.5);
+            border-radius: 6px;
+        }
+
+        .sound-toggle-label {
+            font-size: 16px;
+            color: #776e65;
+        }
+
+        .sound-toggle-btn {
+            background: #bbada0;
+            color: #f9f6f2;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 18px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            min-width: 60px;
+            transition: background 0.15s;
+            touch-action: manipulation;
+        }
+
+        .sound-toggle-btn.active {
+            background: #8f7a66;
+        }
+
         .controls-panel {
             display: contents;
         }
@@ -460,13 +533,54 @@
                 <button class="settings-back" id="settings-back">← Back</button>
                 <div class="settings-title" id="settings-title">Settings</div>
             </div>
-            <div class="settings-section">
-                <div class="settings-section-title" id="language-section-title">Language</div>
-                <div class="language-list" id="language-list"></div>
+
+            <!-- Main Menu -->
+            <div class="settings-main-menu" id="settings-main-menu">
+                <div class="settings-menu-item" id="menu-how-to-play">
+                    <span id="menu-how-to-play-label">How to Play</span>
+                    <span class="menu-arrow">›</span>
+                </div>
+                <div class="settings-menu-item" id="menu-sound">
+                    <span id="menu-sound-label">Sound Settings</span>
+                    <span class="menu-arrow">›</span>
+                </div>
+                <div class="settings-menu-item" id="menu-language">
+                    <span id="menu-language-label">Language</span>
+                    <span class="menu-arrow">›</span>
+                </div>
             </div>
-            <div class="settings-section">
-                <div class="settings-section-title" id="how-to-play-title">How to Play</div>
-                <div class="instructions-text" id="instructions-content"></div>
+
+            <!-- Sub-page: How to Play -->
+            <div class="settings-sub-page" id="sub-how-to-play">
+                <div class="settings-section">
+                    <div class="settings-section-title" id="how-to-play-title">How to Play</div>
+                    <div class="instructions-text" id="instructions-content"></div>
+                </div>
+            </div>
+
+            <!-- Sub-page: Sound Settings -->
+            <div class="settings-sub-page" id="sub-sound">
+                <div class="settings-section">
+                    <div class="settings-section-title" id="sound-section-title">Sound Settings</div>
+                    <div class="sound-toggle-list">
+                        <div class="sound-toggle-item">
+                            <span class="sound-toggle-label" id="sfx-label">Sound Effects</span>
+                            <button class="sound-toggle-btn" id="sfx-btn">OFF</button>
+                        </div>
+                        <div class="sound-toggle-item">
+                            <span class="sound-toggle-label" id="music-label">Background Music</span>
+                            <button class="sound-toggle-btn" id="music-btn">OFF</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sub-page: Language -->
+            <div class="settings-sub-page" id="sub-language">
+                <div class="settings-section">
+                    <div class="settings-section-title" id="language-section-title">Language</div>
+                    <div class="language-list" id="language-list"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -506,7 +620,12 @@
                 language: 'Language',
                 howToPlay: 'How to Play',
                 back: 'Back',
-                instructions: '<strong>Controls:</strong> Use <strong>Arrow Keys</strong> / <strong>WASD</strong> / <strong>Touch Swipe</strong> / <strong>Gamepad (D-pad/Stick)</strong> to move tiles. Gamepad <strong>B</strong> to undo, <strong>A</strong> to confirm.'
+                instructions: '<strong>Controls:</strong> Use <strong>Arrow Keys</strong> / <strong>WASD</strong> / <strong>Touch Swipe</strong> / <strong>Gamepad (D-pad/Stick)</strong> to move tiles. Gamepad <strong>B</strong> to undo, <strong>A</strong> to confirm.',
+                soundSettings: 'Sound Settings',
+                soundEffects: 'Sound Effects',
+                backgroundMusic: 'Background Music',
+                on: 'ON',
+                off: 'OFF'
             },
             'zh-CN': {
                 score: '分数',
@@ -522,7 +641,12 @@
                 language: '语言设置',
                 howToPlay: '玩法说明',
                 back: '返回',
-                instructions: '<strong>操作方式:</strong> 使用 <strong>方向键</strong> / <strong>WASD</strong> / <strong>触屏滑动</strong> / <strong>手柄 (十字键/摇杆)</strong> 控制方块。手柄 <strong>B</strong> 键撤销，<strong>A</strong> 键确认。'
+                instructions: '<strong>操作方式:</strong> 使用 <strong>方向键</strong> / <strong>WASD</strong> / <strong>触屏滑动</strong> / <strong>手柄 (十字键/摇杆)</strong> 控制方块。手柄 <strong>B</strong> 键撤销，<strong>A</strong> 键确认。',
+                soundSettings: '声音设置',
+                soundEffects: '音效',
+                backgroundMusic: '背景音乐',
+                on: '开',
+                off: '关'
             },
             'zh-TW': {
                 score: '分數',
@@ -538,7 +662,12 @@
                 language: '語言設定',
                 howToPlay: '玩法說明',
                 back: '返回',
-                instructions: '<strong>操作方式:</strong> 使用 <strong>方向鍵</strong> / <strong>WASD</strong> / <strong>觸控滑動</strong> / <strong>手把 (十字鍵/搖桿)</strong> 控制方塊。手把 <strong>B</strong> 鍵撤銷，<strong>A</strong> 鍵確認。'
+                instructions: '<strong>操作方式:</strong> 使用 <strong>方向鍵</strong> / <strong>WASD</strong> / <strong>觸控滑動</strong> / <strong>手把 (十字鍵/搖桿)</strong> 控制方塊。手把 <strong>B</strong> 鍵撤銷，<strong>A</strong> 鍵確認。',
+                soundSettings: '聲音設定',
+                soundEffects: '音效',
+                backgroundMusic: '背景音樂',
+                on: '開',
+                off: '關'
             },
             ja: {
                 score: 'スコア',
@@ -554,7 +683,12 @@
                 language: '言語',
                 howToPlay: '遊び方',
                 back: '戻る',
-                instructions: '<strong>操作方法:</strong> <strong>矢印キー</strong> / <strong>WASD</strong> / <strong>タッチスワイプ</strong> / <strong>ゲームパッド (十字キー/スティック)</strong> でタイルを動かします。ゲームパッド <strong>B</strong> で元に戻す、<strong>A</strong> で確認。'
+                instructions: '<strong>操作方法:</strong> <strong>矢印キー</strong> / <strong>WASD</strong> / <strong>タッチスワイプ</strong> / <strong>ゲームパッド (十字キー/スティック)</strong> でタイルを動かします。ゲームパッド <strong>B</strong> で元に戻す、<strong>A</strong> で確認。',
+                soundSettings: 'サウンド設定',
+                soundEffects: '効果音',
+                backgroundMusic: 'BGM',
+                on: 'オン',
+                off: 'オフ'
             },
             ko: {
                 score: '점수',
@@ -570,7 +704,12 @@
                 language: '언어',
                 howToPlay: '게임 방법',
                 back: '뒤로',
-                instructions: '<strong>조작 방법:</strong> <strong>방향키</strong> / <strong>WASD</strong> / <strong>터치 스와이프</strong> / <strong>게임패드 (십자키/스틱)</strong>로 타일을 이동합니다. 게임패드 <strong>B</strong>로 되돌리기, <strong>A</strong>로 확인.'
+                instructions: '<strong>조작 방법:</strong> <strong>방향키</strong> / <strong>WASD</strong> / <strong>터치 스와이프</strong> / <strong>게임패드 (십자키/스틱)</strong>로 타일을 이동합니다. 게임패드 <strong>B</strong>로 되돌리기, <strong>A</strong>로 확인.',
+                soundSettings: '사운드 설정',
+                soundEffects: '효과음',
+                backgroundMusic: '배경 음악',
+                on: '켜기',
+                off: '끄기'
             },
             es: {
                 score: 'Puntos',
@@ -586,7 +725,12 @@
                 language: 'Idioma',
                 howToPlay: 'Cómo jugar',
                 back: 'Volver',
-                instructions: '<strong>Controles:</strong> Usa las <strong>Teclas de dirección</strong> / <strong>WASD</strong> / <strong>Deslizar en pantalla</strong> / <strong>Mando (cruceta/joystick)</strong> para mover las fichas. Mando <strong>B</strong> para deshacer, <strong>A</strong> para confirmar.'
+                instructions: '<strong>Controles:</strong> Usa las <strong>Teclas de dirección</strong> / <strong>WASD</strong> / <strong>Deslizar en pantalla</strong> / <strong>Mando (cruceta/joystick)</strong> para mover las fichas. Mando <strong>B</strong> para deshacer, <strong>A</strong> para confirmar.',
+                soundSettings: 'Sonido',
+                soundEffects: 'Efectos de sonido',
+                backgroundMusic: 'Música de fondo',
+                on: 'SÍ',
+                off: 'NO'
             },
             fr: {
                 score: 'Score',
@@ -602,7 +746,12 @@
                 language: 'Langue',
                 howToPlay: 'Comment jouer',
                 back: 'Retour',
-                instructions: '<strong>Commandes :</strong> Utilisez les <strong>Touches fléchées</strong> / <strong>WASD</strong> / <strong>Glisser sur l\'écran</strong> / <strong>Manette (croix directionnelle/joystick)</strong> pour déplacer les tuiles. Manette <strong>B</strong> pour annuler, <strong>A</strong> pour confirmer.'
+                instructions: '<strong>Commandes :</strong> Utilisez les <strong>Touches fléchées</strong> / <strong>WASD</strong> / <strong>Glisser sur l\'écran</strong> / <strong>Manette (croix directionnelle/joystick)</strong> pour déplacer les tuiles. Manette <strong>B</strong> pour annuler, <strong>A</strong> pour confirmer.',
+                soundSettings: 'Son',
+                soundEffects: 'Effets sonores',
+                backgroundMusic: 'Musique de fond',
+                on: 'OUI',
+                off: 'NON'
             },
             de: {
                 score: 'Punkte',
@@ -618,7 +767,12 @@
                 language: 'Sprache',
                 howToPlay: 'Spielanleitung',
                 back: 'Zurück',
-                instructions: '<strong>Steuerung:</strong> Verwende <strong>Pfeiltasten</strong> / <strong>WASD</strong> / <strong>Wischen</strong> / <strong>Gamepad (Steuerkreuz/Stick)</strong> zum Bewegen der Kacheln. Gamepad <strong>B</strong> zum Rückgängigmachen, <strong>A</strong> zum Bestätigen.'
+                instructions: '<strong>Steuerung:</strong> Verwende <strong>Pfeiltasten</strong> / <strong>WASD</strong> / <strong>Wischen</strong> / <strong>Gamepad (Steuerkreuz/Stick)</strong> zum Bewegen der Kacheln. Gamepad <strong>B</strong> zum Rückgängigmachen, <strong>A</strong> zum Bestätigen.',
+                soundSettings: 'Ton',
+                soundEffects: 'Soundeffekte',
+                backgroundMusic: 'Hintergrundmusik',
+                on: 'AN',
+                off: 'AUS'
             },
             pt: {
                 score: 'Pontos',
@@ -634,7 +788,12 @@
                 language: 'Idioma',
                 howToPlay: 'Como jogar',
                 back: 'Voltar',
-                instructions: '<strong>Controles:</strong> Use as <strong>Setas</strong> / <strong>WASD</strong> / <strong>Deslize na tela</strong> / <strong>Controle (direcional/analógico)</strong> para mover as peças. Controle <strong>B</strong> para desfazer, <strong>A</strong> para confirmar.'
+                instructions: '<strong>Controles:</strong> Use as <strong>Setas</strong> / <strong>WASD</strong> / <strong>Deslize na tela</strong> / <strong>Controle (direcional/analógico)</strong> para mover as peças. Controle <strong>B</strong> para desfazer, <strong>A</strong> para confirmar.',
+                soundSettings: 'Som',
+                soundEffects: 'Efeitos sonoros',
+                backgroundMusic: 'Música de fundo',
+                on: 'SIM',
+                off: 'NÃO'
             },
             ru: {
                 score: 'Счёт',
@@ -650,7 +809,12 @@
                 language: 'Язык',
                 howToPlay: 'Как играть',
                 back: 'Назад',
-                instructions: '<strong>Управление:</strong> Используйте <strong>Стрелки</strong> / <strong>WASD</strong> / <strong>Свайп</strong> / <strong>Геймпад (крестовина/стик)</strong> для перемещения плиток. Геймпад <strong>B</strong> — отмена, <strong>A</strong> — подтверждение.'
+                instructions: '<strong>Управление:</strong> Используйте <strong>Стрелки</strong> / <strong>WASD</strong> / <strong>Свайп</strong> / <strong>Геймпад (крестовина/стик)</strong> для перемещения плиток. Геймпад <strong>B</strong> — отмена, <strong>A</strong> — подтверждение.',
+                soundSettings: 'Звук',
+                soundEffects: 'Звуковые эффекты',
+                backgroundMusic: 'Фоновая музыка',
+                on: 'ВКЛ',
+                off: 'ВЫКЛ'
             },
             ar: {
                 score: 'النقاط',
@@ -666,7 +830,12 @@
                 language: 'اللغة',
                 howToPlay: 'طريقة اللعب',
                 back: 'رجوع',
-                instructions: '<strong>التحكم:</strong> استخدم <strong>مفاتيح الأسهم</strong> / <strong>WASD</strong> / <strong>السحب على الشاشة</strong> / <strong>ذراع التحكم (الأزرار الاتجاهية/العصا)</strong> لتحريك المربعات. زر <strong>B</strong> للتراجع، زر <strong>A</strong> للتأكيد.'
+                instructions: '<strong>التحكم:</strong> استخدم <strong>مفاتيح الأسهم</strong> / <strong>WASD</strong> / <strong>السحب على الشاشة</strong> / <strong>ذراع التحكم (الأزرار الاتجاهية/العصا)</strong> لتحريك المربعات. زر <strong>B</strong> للتراجع، زر <strong>A</strong> للتأكيد.',
+                soundSettings: 'الصوت',
+                soundEffects: 'المؤثرات الصوتية',
+                backgroundMusic: 'موسيقى الخلفية',
+                on: 'تشغيل',
+                off: 'إيقاف'
             },
             it: {
                 score: 'Punti',
@@ -682,7 +851,12 @@
                 language: 'Lingua',
                 howToPlay: 'Come giocare',
                 back: 'Indietro',
-                instructions: '<strong>Comandi:</strong> Usa i <strong>Tasti freccia</strong> / <strong>WASD</strong> / <strong>Scorri sullo schermo</strong> / <strong>Controller (croce direzionale/stick)</strong> per muovere le tessere. Controller <strong>B</strong> per annullare, <strong>A</strong> per confermare.'
+                instructions: '<strong>Comandi:</strong> Usa i <strong>Tasti freccia</strong> / <strong>WASD</strong> / <strong>Scorri sullo schermo</strong> / <strong>Controller (croce direzionale/stick)</strong> per muovere le tessere. Controller <strong>B</strong> per annullare, <strong>A</strong> per confermare.',
+                soundSettings: 'Audio',
+                soundEffects: 'Effetti sonori',
+                backgroundMusic: 'Musica di sottofondo',
+                on: 'SÌ',
+                off: 'NO'
             }
         };
 
@@ -742,12 +916,33 @@
             }
 
             // Settings UI
-            document.getElementById('settings-title').textContent = t('settings');
             document.getElementById('settings-back').textContent = '← ' + t('back');
             document.getElementById('language-section-title').textContent = t('language');
             document.getElementById('how-to-play-title').textContent = t('howToPlay');
             document.getElementById('instructions-content').innerHTML = t('instructions');
             document.getElementById('settings-btn').title = t('settings');
+
+            // Settings menu items
+            document.getElementById('menu-how-to-play-label').textContent = t('howToPlay');
+            document.getElementById('menu-sound-label').textContent = t('soundSettings');
+            document.getElementById('menu-language-label').textContent = t('language');
+
+            // Sound sub-page
+            document.getElementById('sound-section-title').textContent = t('soundSettings');
+            document.getElementById('sfx-label').textContent = t('soundEffects');
+            document.getElementById('music-label').textContent = t('backgroundMusic');
+            updateSoundUI();
+
+            // Update settings title based on current sub-page
+            if (settingsSubPage === 'how-to-play') {
+                document.getElementById('settings-title').textContent = t('howToPlay');
+            } else if (settingsSubPage === 'sound') {
+                document.getElementById('settings-title').textContent = t('soundSettings');
+            } else if (settingsSubPage === 'language') {
+                document.getElementById('settings-title').textContent = t('language');
+            } else {
+                document.getElementById('settings-title').textContent = t('settings');
+            }
 
             renderLanguageList();
         }
@@ -772,22 +967,252 @@
 
         // ===== Settings =====
         var settingsOpen = false;
+        var settingsSubPage = null; // null = main menu, or 'how-to-play' | 'sound' | 'language'
         var settingsOverlay = document.getElementById('settings-overlay');
         var settingsBtn = document.getElementById('settings-btn');
         var settingsBackBtn = document.getElementById('settings-back');
+        var settingsMainMenu = document.getElementById('settings-main-menu');
+
+        var subPages = {
+            'how-to-play': document.getElementById('sub-how-to-play'),
+            'sound': document.getElementById('sub-sound'),
+            'language': document.getElementById('sub-language')
+        };
 
         function openSettings() {
             settingsOpen = true;
+            settingsSubPage = null;
+            settingsMainMenu.style.display = '';
+            for (var key in subPages) subPages[key].classList.remove('active');
+            document.getElementById('settings-title').textContent = t('settings');
             settingsOverlay.classList.add('active');
         }
 
         function closeSettings() {
             settingsOpen = false;
+            settingsSubPage = null;
             settingsOverlay.classList.remove('active');
         }
 
+        function openSubPage(page) {
+            settingsSubPage = page;
+            settingsMainMenu.style.display = 'none';
+            for (var key in subPages) subPages[key].classList.remove('active');
+            subPages[page].classList.add('active');
+
+            var titleMap = {
+                'how-to-play': t('howToPlay'),
+                'sound': t('soundSettings'),
+                'language': t('language')
+            };
+            document.getElementById('settings-title').textContent = titleMap[page] || t('settings');
+        }
+
+        function settingsBack() {
+            if (settingsSubPage) {
+                settingsSubPage = null;
+                settingsMainMenu.style.display = '';
+                for (var key in subPages) subPages[key].classList.remove('active');
+                document.getElementById('settings-title').textContent = t('settings');
+            } else {
+                closeSettings();
+            }
+        }
+
         settingsBtn.addEventListener('click', openSettings);
-        settingsBackBtn.addEventListener('click', closeSettings);
+        settingsBackBtn.addEventListener('click', settingsBack);
+        document.getElementById('menu-how-to-play').addEventListener('click', function () { openSubPage('how-to-play'); });
+        document.getElementById('menu-sound').addEventListener('click', function () { openSubPage('sound'); });
+        document.getElementById('menu-language').addEventListener('click', function () { openSubPage('language'); });
+
+        // ===== Audio =====
+        var audioCtx = null;
+        var sfxEnabled = localStorage.getItem('game4096_sfx') === 'true';
+        var musicEnabled = localStorage.getItem('game4096_music') === 'true';
+        var bgMusicNodes = null;
+        var bgMusicTimer = null;
+
+        function ensureAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        // --- Move sound effect (synthesized pop) ---
+        function playMoveSFX() {
+            if (!sfxEnabled) return;
+            try {
+                var ctx = ensureAudioContext();
+                var osc = ctx.createOscillator();
+                var gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(440, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + 0.06);
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.1);
+            } catch (e) { /* ignore audio errors */ }
+        }
+
+        // --- Procedural ambient background music ---
+        // Chord progression: Cmaj7 → Am7 → Fmaj7 → G7 (healing/soothing loop)
+        var bgChords = [
+            [261.63, 329.63, 392.00, 493.88],  // Cmaj7: C4 E4 G4 B4
+            [220.00, 261.63, 329.63, 392.00],  // Am7:  A3 C4 E4 G4
+            [174.61, 220.00, 261.63, 329.63],  // Fmaj7: F3 A3 C4 E4
+            [196.00, 246.94, 293.66, 349.23]   // G7:   G3 B3 D4 F4
+        ];
+
+        function startBgMusic() {
+            if (!musicEnabled) return;
+            if (bgMusicNodes) return; // already playing
+            try {
+                var ctx = ensureAudioContext();
+
+                // Master gain for overall volume
+                var masterGain = ctx.createGain();
+                masterGain.gain.value = 0.12;
+
+                // Low-pass filter for warmth
+                var filter = ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 800;
+                filter.Q.value = 0.5;
+
+                filter.connect(masterGain);
+                masterGain.connect(ctx.destination);
+
+                bgMusicNodes = { ctx: ctx, masterGain: masterGain, filter: filter, oscs: [] };
+
+                function scheduleChordCycle() {
+                    if (!bgMusicNodes) return;
+                    var ctx = bgMusicNodes.ctx;
+                    var now = ctx.currentTime;
+                    var chordDuration = 4; // seconds per chord
+                    var fadeDuration = 1.5; // crossfade duration
+
+                    for (var c = 0; c < bgChords.length; c++) {
+                        var chord = bgChords[c];
+                        var startTime = now + c * chordDuration;
+
+                        for (var n = 0; n < chord.length; n++) {
+                            // Two slightly detuned oscillators per note for warmth
+                            for (var d = 0; d < 2; d++) {
+                                var osc = ctx.createOscillator();
+                                var noteGain = ctx.createGain();
+
+                                osc.type = d === 0 ? 'sine' : 'triangle';
+                                osc.frequency.value = chord[n] * (1 + (d === 0 ? 0.002 : -0.002));
+
+                                // Envelope: fade in → sustain → fade out
+                                noteGain.gain.setValueAtTime(0.001, startTime);
+                                noteGain.gain.exponentialRampToValueAtTime(
+                                    d === 0 ? 0.08 : 0.03,
+                                    startTime + fadeDuration
+                                );
+                                noteGain.gain.setValueAtTime(
+                                    d === 0 ? 0.08 : 0.03,
+                                    startTime + chordDuration - fadeDuration
+                                );
+                                noteGain.gain.exponentialRampToValueAtTime(
+                                    0.001,
+                                    startTime + chordDuration
+                                );
+
+                                osc.connect(noteGain);
+                                noteGain.connect(bgMusicNodes.filter);
+
+                                osc.start(startTime);
+                                osc.stop(startTime + chordDuration + 0.1);
+                                bgMusicNodes.oscs.push(osc);
+                            }
+                        }
+                    }
+
+                    // Schedule next cycle
+                    var cycleDuration = bgChords.length * chordDuration * 1000;
+                    bgMusicTimer = setTimeout(function () {
+                        if (bgMusicNodes) {
+                            bgMusicNodes.oscs = [];
+                            scheduleChordCycle();
+                        }
+                    }, cycleDuration - 200); // slight overlap for seamless loop
+                }
+
+                scheduleChordCycle();
+            } catch (e) { /* ignore audio errors */ }
+        }
+
+        function stopBgMusic() {
+            if (bgMusicTimer) {
+                clearTimeout(bgMusicTimer);
+                bgMusicTimer = null;
+            }
+            if (bgMusicNodes) {
+                try {
+                    for (var i = 0; i < bgMusicNodes.oscs.length; i++) {
+                        try { bgMusicNodes.oscs[i].stop(); } catch (e) {}
+                    }
+                    bgMusicNodes.masterGain.disconnect();
+                    bgMusicNodes.filter.disconnect();
+                } catch (e) {}
+                bgMusicNodes = null;
+            }
+        }
+
+        // --- Sound toggle controls ---
+        function toggleSFX() {
+            sfxEnabled = !sfxEnabled;
+            localStorage.setItem('game4096_sfx', sfxEnabled);
+            updateSoundUI();
+            if (sfxEnabled) playMoveSFX(); // feedback sound
+        }
+
+        function toggleMusic() {
+            musicEnabled = !musicEnabled;
+            localStorage.setItem('game4096_music', musicEnabled);
+            updateSoundUI();
+            if (musicEnabled) {
+                startBgMusic();
+            } else {
+                stopBgMusic();
+            }
+        }
+
+        function updateSoundUI() {
+            var sfxBtn = document.getElementById('sfx-btn');
+            var musicBtn = document.getElementById('music-btn');
+            sfxBtn.textContent = sfxEnabled ? t('on') : t('off');
+            sfxBtn.className = 'sound-toggle-btn' + (sfxEnabled ? ' active' : '');
+            musicBtn.textContent = musicEnabled ? t('on') : t('off');
+            musicBtn.className = 'sound-toggle-btn' + (musicEnabled ? ' active' : '');
+        }
+
+        document.getElementById('sfx-btn').addEventListener('click', toggleSFX);
+        document.getElementById('music-btn').addEventListener('click', toggleMusic);
+
+        // --- Mobile audio unlock (resume on first interaction) ---
+        var audioUnlocked = false;
+        function unlockAudio() {
+            if (audioUnlocked) return;
+            audioUnlocked = true;
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            if (musicEnabled && !bgMusicNodes) {
+                startBgMusic();
+            }
+        }
+        document.addEventListener('touchstart', unlockAudio, { once: true });
+        document.addEventListener('click', unlockAudio, { once: true });
+        document.addEventListener('keydown', unlockAudio, { once: true });
 
         // ===== Game Logic =====
         const SIZE = 4;
@@ -1110,6 +1535,8 @@
 
             const result = move(grid, dir);
             if (!result.moved) return;
+
+            playMoveSFX();
 
             // Save for undo (before applying move)
             const oldGrid = cloneGrid(grid);
