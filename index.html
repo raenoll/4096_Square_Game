@@ -403,6 +403,25 @@
             background: #8f7a66;
         }
 
+        .music-style-select {
+            background: #8f7a66;
+            color: #f9f6f2;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            min-width: 90px;
+            touch-action: manipulation;
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23f9f6f2' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 30px;
+        }
+
         .controls-panel {
             display: contents;
         }
@@ -571,6 +590,13 @@
                             <span class="sound-toggle-label" id="music-label">Background Music</span>
                             <button class="sound-toggle-btn" id="music-btn">OFF</button>
                         </div>
+                        <div class="sound-toggle-item" id="music-style-row">
+                            <span class="sound-toggle-label" id="music-style-label">Style</span>
+                            <select class="music-style-select" id="music-style-select">
+                                <option value="serene">Serene</option>
+                                <option value="upbeat">Upbeat</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -624,6 +650,9 @@
                 soundSettings: 'Sound Settings',
                 soundEffects: 'Sound Effects',
                 backgroundMusic: 'Background Music',
+                musicStyle: 'Style',
+                styleSerene: 'Serene',
+                styleUpbeat: 'Upbeat',
                 on: 'ON',
                 off: 'OFF'
             },
@@ -645,6 +674,9 @@
                 soundSettings: '声音设置',
                 soundEffects: '音效',
                 backgroundMusic: '背景音乐',
+                musicStyle: '风格',
+                styleSerene: '舒缓',
+                styleUpbeat: '欢快',
                 on: '开',
                 off: '关'
             },
@@ -666,6 +698,9 @@
                 soundSettings: '聲音設定',
                 soundEffects: '音效',
                 backgroundMusic: '背景音樂',
+                musicStyle: '風格',
+                styleSerene: '舒緩',
+                styleUpbeat: '歡快',
                 on: '開',
                 off: '關'
             },
@@ -687,6 +722,9 @@
                 soundSettings: 'サウンド設定',
                 soundEffects: '効果音',
                 backgroundMusic: 'BGM',
+                musicStyle: 'スタイル',
+                styleSerene: '穏やか',
+                styleUpbeat: '明るい',
                 on: 'オン',
                 off: 'オフ'
             },
@@ -708,6 +746,9 @@
                 soundSettings: '사운드 설정',
                 soundEffects: '효과음',
                 backgroundMusic: '배경 음악',
+                musicStyle: '스타일',
+                styleSerene: '잔잔한',
+                styleUpbeat: '신나는',
                 on: '켜기',
                 off: '끄기'
             },
@@ -729,6 +770,9 @@
                 soundSettings: 'Sonido',
                 soundEffects: 'Efectos de sonido',
                 backgroundMusic: 'Música de fondo',
+                musicStyle: 'Estilo',
+                styleSerene: 'Sereno',
+                styleUpbeat: 'Animado',
                 on: 'SÍ',
                 off: 'NO'
             },
@@ -750,6 +794,9 @@
                 soundSettings: 'Son',
                 soundEffects: 'Effets sonores',
                 backgroundMusic: 'Musique de fond',
+                musicStyle: 'Style',
+                styleSerene: 'Serein',
+                styleUpbeat: 'Entraînant',
                 on: 'OUI',
                 off: 'NON'
             },
@@ -771,6 +818,9 @@
                 soundSettings: 'Ton',
                 soundEffects: 'Soundeffekte',
                 backgroundMusic: 'Hintergrundmusik',
+                musicStyle: 'Stil',
+                styleSerene: 'Ruhig',
+                styleUpbeat: 'Fröhlich',
                 on: 'AN',
                 off: 'AUS'
             },
@@ -792,6 +842,9 @@
                 soundSettings: 'Som',
                 soundEffects: 'Efeitos sonoros',
                 backgroundMusic: 'Música de fundo',
+                musicStyle: 'Estilo',
+                styleSerene: 'Sereno',
+                styleUpbeat: 'Animado',
                 on: 'SIM',
                 off: 'NÃO'
             },
@@ -813,6 +866,9 @@
                 soundSettings: 'Звук',
                 soundEffects: 'Звуковые эффекты',
                 backgroundMusic: 'Фоновая музыка',
+                musicStyle: 'Стиль',
+                styleSerene: 'Спокойный',
+                styleUpbeat: 'Весёлый',
                 on: 'ВКЛ',
                 off: 'ВЫКЛ'
             },
@@ -834,6 +890,9 @@
                 soundSettings: 'الصوت',
                 soundEffects: 'المؤثرات الصوتية',
                 backgroundMusic: 'موسيقى الخلفية',
+                musicStyle: 'النمط',
+                styleSerene: 'هادئ',
+                styleUpbeat: 'مرح',
                 on: 'تشغيل',
                 off: 'إيقاف'
             },
@@ -855,6 +914,9 @@
                 soundSettings: 'Audio',
                 soundEffects: 'Effetti sonori',
                 backgroundMusic: 'Musica di sottofondo',
+                musicStyle: 'Stile',
+                styleSerene: 'Sereno',
+                styleUpbeat: 'Allegro',
                 on: 'SÌ',
                 off: 'NO'
             }
@@ -931,6 +993,7 @@
             document.getElementById('sound-section-title').textContent = t('soundSettings');
             document.getElementById('sfx-label').textContent = t('soundEffects');
             document.getElementById('music-label').textContent = t('backgroundMusic');
+            document.getElementById('music-style-label').textContent = t('musicStyle');
             updateSoundUI();
 
             // Update settings title based on current sub-page
@@ -1061,29 +1124,64 @@
             } catch (e) { /* ignore audio errors */ }
         }
 
-        // --- Procedural ambient background music ---
-        // Chord progression: Cmaj7 → Am7 → Fmaj7 → G7 (healing/soothing loop)
-        var bgChords = [
-            [261.63, 329.63, 392.00, 493.88],  // Cmaj7: C4 E4 G4 B4
-            [220.00, 261.63, 329.63, 392.00],  // Am7:  A3 C4 E4 G4
-            [174.61, 220.00, 261.63, 329.63],  // Fmaj7: F3 A3 C4 E4
-            [196.00, 246.94, 293.66, 349.23]   // G7:   G3 B3 D4 F4
-        ];
+        // --- Procedural background music (two styles) ---
+        var BGM_STYLES = {
+            serene: {
+                // Cmaj7 → Am7 → Fmaj7 → G7 (healing/soothing)
+                chords: [
+                    [261.63, 329.63, 392.00, 493.88],
+                    [220.00, 261.63, 329.63, 392.00],
+                    [174.61, 220.00, 261.63, 329.63],
+                    [196.00, 246.94, 293.66, 349.23]
+                ],
+                chordDuration: 4,
+                fadeDuration: 1.5,
+                filterFreq: 800,
+                masterVol: 0.12,
+                oscTypes: ['sine', 'triangle'],
+                oscGains: [0.08, 0.03],
+                detune: 0.002,
+                arpeggio: false
+            },
+            upbeat: {
+                // C → G → Am → F (uplifting pop progression)
+                // then D → A → Bm → G (bright key change)
+                chords: [
+                    [261.63, 329.63, 392.00],   // C:  C4 E4 G4
+                    [196.00, 246.94, 392.00],   // G:  G3 B3 G4
+                    [220.00, 261.63, 329.63],   // Am: A3 C4 E4
+                    [174.61, 220.00, 261.63],   // F:  F3 A3 C4
+                    [293.66, 369.99, 440.00],   // D:  D4 F#4 A4
+                    [220.00, 277.18, 329.63],   // A:  A3 C#4 E4
+                    [246.94, 293.66, 369.99],   // Bm: B3 D4 F#4
+                    [196.00, 246.94, 392.00]    // G:  G3 B3 G4
+                ],
+                chordDuration: 2,
+                fadeDuration: 0.4,
+                filterFreq: 2500,
+                masterVol: 0.10,
+                oscTypes: ['triangle', 'square'],
+                oscGains: [0.07, 0.015],
+                detune: 0.003,
+                arpeggio: true
+            }
+        };
+
+        var currentBgmStyle = localStorage.getItem('game4096_bgmStyle') || 'serene';
 
         function startBgMusic() {
             if (!musicEnabled) return;
             if (bgMusicNodes) return; // already playing
             try {
                 var ctx = ensureAudioContext();
+                var style = BGM_STYLES[currentBgmStyle] || BGM_STYLES.serene;
 
-                // Master gain for overall volume
                 var masterGain = ctx.createGain();
-                masterGain.gain.value = 0.12;
+                masterGain.gain.value = style.masterVol;
 
-                // Low-pass filter for warmth
                 var filter = ctx.createBiquadFilter();
                 filter.type = 'lowpass';
-                filter.frequency.value = 800;
+                filter.frequency.value = style.filterFreq;
                 filter.Q.value = 0.5;
 
                 filter.connect(masterGain);
@@ -1095,55 +1193,50 @@
                     if (!bgMusicNodes) return;
                     var ctx = bgMusicNodes.ctx;
                     var now = ctx.currentTime;
-                    var chordDuration = 4; // seconds per chord
-                    var fadeDuration = 1.5; // crossfade duration
+                    var chords = style.chords;
+                    var chordDur = style.chordDuration;
+                    var fadeDur = style.fadeDuration;
 
-                    for (var c = 0; c < bgChords.length; c++) {
-                        var chord = bgChords[c];
-                        var startTime = now + c * chordDuration;
+                    for (var c = 0; c < chords.length; c++) {
+                        var chord = chords[c];
+                        var chordStart = now + c * chordDur;
 
                         for (var n = 0; n < chord.length; n++) {
-                            // Two slightly detuned oscillators per note for warmth
-                            for (var d = 0; d < 2; d++) {
+                            // Arpeggio: stagger note start times within the chord
+                            var noteDelay = style.arpeggio ? n * 0.15 : 0;
+                            var noteStart = chordStart + noteDelay;
+                            var noteDur = chordDur - noteDelay;
+
+                            for (var d = 0; d < style.oscTypes.length; d++) {
                                 var osc = ctx.createOscillator();
                                 var noteGain = ctx.createGain();
 
-                                osc.type = d === 0 ? 'sine' : 'triangle';
-                                osc.frequency.value = chord[n] * (1 + (d === 0 ? 0.002 : -0.002));
+                                osc.type = style.oscTypes[d];
+                                osc.frequency.value = chord[n] * (1 + (d === 0 ? style.detune : -style.detune));
 
-                                // Envelope: fade in → sustain → fade out
-                                noteGain.gain.setValueAtTime(0.001, startTime);
-                                noteGain.gain.exponentialRampToValueAtTime(
-                                    d === 0 ? 0.08 : 0.03,
-                                    startTime + fadeDuration
-                                );
-                                noteGain.gain.setValueAtTime(
-                                    d === 0 ? 0.08 : 0.03,
-                                    startTime + chordDuration - fadeDuration
-                                );
-                                noteGain.gain.exponentialRampToValueAtTime(
-                                    0.001,
-                                    startTime + chordDuration
-                                );
+                                var peakGain = style.oscGains[d];
+                                noteGain.gain.setValueAtTime(0.001, noteStart);
+                                noteGain.gain.exponentialRampToValueAtTime(peakGain, noteStart + fadeDur);
+                                noteGain.gain.setValueAtTime(peakGain, noteStart + noteDur - fadeDur);
+                                noteGain.gain.exponentialRampToValueAtTime(0.001, noteStart + noteDur);
 
                                 osc.connect(noteGain);
                                 noteGain.connect(bgMusicNodes.filter);
 
-                                osc.start(startTime);
-                                osc.stop(startTime + chordDuration + 0.1);
+                                osc.start(noteStart);
+                                osc.stop(noteStart + noteDur + 0.1);
                                 bgMusicNodes.oscs.push(osc);
                             }
                         }
                     }
 
-                    // Schedule next cycle
-                    var cycleDuration = bgChords.length * chordDuration * 1000;
+                    var cycleDuration = chords.length * chordDur * 1000;
                     bgMusicTimer = setTimeout(function () {
                         if (bgMusicNodes) {
                             bgMusicNodes.oscs = [];
                             scheduleChordCycle();
                         }
-                    }, cycleDuration - 200); // slight overlap for seamless loop
+                    }, cycleDuration - 200);
                 }
 
                 scheduleChordCycle();
@@ -1186,17 +1279,36 @@
             }
         }
 
+        function changeBgmStyle(newStyle) {
+            if (newStyle === currentBgmStyle) return;
+            currentBgmStyle = newStyle;
+            localStorage.setItem('game4096_bgmStyle', newStyle);
+            // Restart music with new style if currently playing
+            if (musicEnabled && bgMusicNodes) {
+                stopBgMusic();
+                startBgMusic();
+            }
+        }
+
         function updateSoundUI() {
             var sfxBtn = document.getElementById('sfx-btn');
             var musicBtn = document.getElementById('music-btn');
+            var styleSelect = document.getElementById('music-style-select');
             sfxBtn.textContent = sfxEnabled ? t('on') : t('off');
             sfxBtn.className = 'sound-toggle-btn' + (sfxEnabled ? ' active' : '');
             musicBtn.textContent = musicEnabled ? t('on') : t('off');
             musicBtn.className = 'sound-toggle-btn' + (musicEnabled ? ' active' : '');
+            // Update dropdown value and option labels
+            styleSelect.value = currentBgmStyle;
+            styleSelect.options[0].textContent = t('styleSerene');
+            styleSelect.options[1].textContent = t('styleUpbeat');
         }
 
         document.getElementById('sfx-btn').addEventListener('click', toggleSFX);
         document.getElementById('music-btn').addEventListener('click', toggleMusic);
+        document.getElementById('music-style-select').addEventListener('change', function () {
+            changeBgmStyle(this.value);
+        });
 
         // --- Mobile audio unlock (resume on first interaction) ---
         var audioUnlocked = false;
