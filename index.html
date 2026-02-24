@@ -422,6 +422,161 @@
             padding-right: 30px;
         }
 
+        /* ===== Powerup Bar ===== */
+        .powerup-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 8px;
+        }
+
+        .powerup-hint {
+            font-size: 13px;
+            color: #776e65;
+            flex: 1;
+            min-height: 20px;
+        }
+
+        .powerup-hint.active {
+            color: #f65e3b;
+            font-weight: bold;
+            animation: hint-pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes hint-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .powerup-buttons {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .powerup-btn {
+            position: relative;
+            width: 44px;
+            height: 44px;
+            border: 2px solid #bbada0;
+            border-radius: 10px;
+            background: rgba(238, 228, 218, 0.5);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.15s;
+            touch-action: manipulation;
+            padding: 0;
+        }
+
+        .powerup-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .powerup-btn:not(:disabled):hover {
+            background: rgba(238, 228, 218, 0.9);
+            border-color: #8f7a66;
+        }
+
+        .powerup-btn.pu-active {
+            border-color: #f65e3b;
+            background: rgba(246, 94, 59, 0.15);
+            box-shadow: 0 0 8px rgba(246, 94, 59, 0.4);
+        }
+
+        .pu-icon {
+            font-size: 22px;
+            line-height: 1;
+        }
+
+        .pu-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #8f7a66;
+            color: #f9f6f2;
+            font-size: 11px;
+            font-weight: bold;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            line-height: 1;
+        }
+
+        .pu-badge.pu-zero {
+            background: #cdc1b4;
+        }
+
+        .pu-cancel {
+            width: 32px;
+            height: 32px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #776e65;
+            border-radius: 50%;
+            border: 2px solid #bbada0;
+        }
+
+        /* Selection overlay on game board */
+        .game-board.selecting .tile-container {
+            cursor: pointer;
+        }
+
+        .game-board.selecting::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border: 3px solid #f65e3b;
+            border-radius: 8px;
+            pointer-events: none;
+            z-index: 50;
+            animation: select-border-pulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes select-border-pulse {
+            0%, 100% { border-color: #f65e3b; }
+            50% { border-color: #f2b179; }
+        }
+
+        .tile.tile-selected {
+            box-shadow: 0 0 0 3px #f65e3b, 0 0 12px rgba(246, 94, 59, 0.5);
+            z-index: 30;
+        }
+
+        @keyframes tile-demolish {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        .tile-demolishing {
+            animation: tile-demolish 0.3s ease-out forwards;
+            z-index: 30;
+        }
+
+        /* Powerup gained notification */
+        @keyframes pu-gained {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-20px); opacity: 0; }
+        }
+
+        .pu-gained-anim {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #f65e3b;
+            pointer-events: none;
+            animation: pu-gained 0.8s ease-out forwards;
+        }
+
         .controls-panel {
             display: contents;
         }
@@ -490,6 +645,18 @@
             .buttons { flex-wrap: wrap; }
             .btn { padding: 6px 10px; font-size: 12px; }
 
+            .powerup-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-bottom: 4px;
+                gap: 4px;
+            }
+            .powerup-hint { font-size: 11px; }
+            .powerup-btn { width: 36px; height: 36px; }
+            .pu-icon { font-size: 18px; }
+            .pu-badge { width: 16px; height: 16px; font-size: 9px; top: -4px; right: -4px; }
+            .pu-cancel { width: 26px; height: 26px; font-size: 13px; }
+
             .game-board {
                 width: auto;
                 height: calc(100vh - 16px);
@@ -527,6 +694,20 @@
                     <button class="btn" id="undo-btn">Undo</button>
                     <button class="btn" id="new-game-btn">New Game</button>
                     <button class="btn btn-icon" id="settings-btn" title="Settings">⚙</button>
+                </div>
+            </div>
+            <div class="powerup-bar" id="powerup-bar" style="display:none">
+                <div class="powerup-hint" id="powerup-hint"></div>
+                <div class="powerup-buttons">
+                    <button class="powerup-btn" id="pu-demolish" disabled>
+                        <span class="pu-icon">💣</span>
+                        <span class="pu-badge" id="pu-demolish-count">0</span>
+                    </button>
+                    <button class="powerup-btn" id="pu-swap" disabled>
+                        <span class="pu-icon">🔄</span>
+                        <span class="pu-badge" id="pu-swap-count">0</span>
+                    </button>
+                    <button class="powerup-btn pu-cancel" id="pu-cancel" style="display:none">✕</button>
                 </div>
             </div>
         </div>
@@ -598,6 +779,13 @@
                             </select>
                         </div>
                     </div>
+                    <div class="settings-section-title" id="powerup-section-title" style="margin-top:20px">Power-ups</div>
+                    <div class="sound-toggle-list">
+                        <div class="sound-toggle-item">
+                            <span class="sound-toggle-label" id="powerup-toggle-label">Power-ups</span>
+                            <button class="sound-toggle-btn" id="powerup-btn">OFF</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -654,7 +842,17 @@
                 styleSerene: 'Serene',
                 styleUpbeat: 'Upbeat',
                 on: 'ON',
-                off: 'OFF'
+                off: 'OFF',
+                powerups: 'Power-ups',
+                demolish: 'Demolish',
+                swap: 'Swap',
+                demolishTip: 'Remove a tile',
+                swapTip: 'Swap two tiles',
+                tapToSelect: 'Tap a tile',
+                tapFirst: 'Tap 1st tile',
+                tapSecond: 'Tap 2nd tile',
+                powerupGained: '+1',
+                cancelSelect: 'Cancel'
             },
             'zh-CN': {
                 score: '分数',
@@ -678,7 +876,17 @@
                 styleSerene: '舒缓',
                 styleUpbeat: '欢快',
                 on: '开',
-                off: '关'
+                off: '关',
+                powerups: '道具',
+                demolish: '清除',
+                swap: '互换',
+                demolishTip: '移除一个方块',
+                swapTip: '交换两个方块',
+                tapToSelect: '点选方块',
+                tapFirst: '点选第1个',
+                tapSecond: '点选第2个',
+                powerupGained: '+1',
+                cancelSelect: '取消'
             },
             'zh-TW': {
                 score: '分數',
@@ -702,7 +910,17 @@
                 styleSerene: '舒緩',
                 styleUpbeat: '歡快',
                 on: '開',
-                off: '關'
+                off: '關',
+                powerups: '道具',
+                demolish: '清除',
+                swap: '互換',
+                demolishTip: '移除一個方塊',
+                swapTip: '交換兩個方塊',
+                tapToSelect: '點選方塊',
+                tapFirst: '點選第1個',
+                tapSecond: '點選第2個',
+                powerupGained: '+1',
+                cancelSelect: '取消'
             },
             ja: {
                 score: 'スコア',
@@ -726,7 +944,17 @@
                 styleSerene: '穏やか',
                 styleUpbeat: '明るい',
                 on: 'オン',
-                off: 'オフ'
+                off: 'オフ',
+                powerups: 'アイテム',
+                demolish: '除去',
+                swap: '交換',
+                demolishTip: 'タイルを除去',
+                swapTip: '2つのタイルを交換',
+                tapToSelect: 'タイルを選択',
+                tapFirst: '1つ目を選択',
+                tapSecond: '2つ目を選択',
+                powerupGained: '+1',
+                cancelSelect: 'キャンセル'
             },
             ko: {
                 score: '점수',
@@ -750,7 +978,17 @@
                 styleSerene: '잔잔한',
                 styleUpbeat: '신나는',
                 on: '켜기',
-                off: '끄기'
+                off: '끄기',
+                powerups: '아이템',
+                demolish: '제거',
+                swap: '교환',
+                demolishTip: '타일 제거',
+                swapTip: '타일 2개 교환',
+                tapToSelect: '타일 선택',
+                tapFirst: '첫 번째 선택',
+                tapSecond: '두 번째 선택',
+                powerupGained: '+1',
+                cancelSelect: '취소'
             },
             es: {
                 score: 'Puntos',
@@ -774,7 +1012,17 @@
                 styleSerene: 'Sereno',
                 styleUpbeat: 'Animado',
                 on: 'SÍ',
-                off: 'NO'
+                off: 'NO',
+                powerups: 'Poderes',
+                demolish: 'Demoler',
+                swap: 'Intercambiar',
+                demolishTip: 'Eliminar una ficha',
+                swapTip: 'Intercambiar dos fichas',
+                tapToSelect: 'Toca una ficha',
+                tapFirst: 'Toca la 1ª ficha',
+                tapSecond: 'Toca la 2ª ficha',
+                powerupGained: '+1',
+                cancelSelect: 'Cancelar'
             },
             fr: {
                 score: 'Score',
@@ -798,7 +1046,17 @@
                 styleSerene: 'Serein',
                 styleUpbeat: 'Entraînant',
                 on: 'OUI',
-                off: 'NON'
+                off: 'NON',
+                powerups: 'Bonus',
+                demolish: 'Détruire',
+                swap: 'Échanger',
+                demolishTip: 'Supprimer une tuile',
+                swapTip: 'Échanger deux tuiles',
+                tapToSelect: 'Touchez une tuile',
+                tapFirst: 'Touchez la 1ère',
+                tapSecond: 'Touchez la 2ème',
+                powerupGained: '+1',
+                cancelSelect: 'Annuler'
             },
             de: {
                 score: 'Punkte',
@@ -822,7 +1080,17 @@
                 styleSerene: 'Ruhig',
                 styleUpbeat: 'Fröhlich',
                 on: 'AN',
-                off: 'AUS'
+                off: 'AUS',
+                powerups: 'Power-ups',
+                demolish: 'Entfernen',
+                swap: 'Tauschen',
+                demolishTip: 'Kachel entfernen',
+                swapTip: 'Zwei Kacheln tauschen',
+                tapToSelect: 'Kachel antippen',
+                tapFirst: '1. Kachel antippen',
+                tapSecond: '2. Kachel antippen',
+                powerupGained: '+1',
+                cancelSelect: 'Abbrechen'
             },
             pt: {
                 score: 'Pontos',
@@ -846,7 +1114,17 @@
                 styleSerene: 'Sereno',
                 styleUpbeat: 'Animado',
                 on: 'SIM',
-                off: 'NÃO'
+                off: 'NÃO',
+                powerups: 'Poderes',
+                demolish: 'Demolir',
+                swap: 'Trocar',
+                demolishTip: 'Remover uma peça',
+                swapTip: 'Trocar duas peças',
+                tapToSelect: 'Toque uma peça',
+                tapFirst: 'Toque a 1ª peça',
+                tapSecond: 'Toque a 2ª peça',
+                powerupGained: '+1',
+                cancelSelect: 'Cancelar'
             },
             ru: {
                 score: 'Счёт',
@@ -870,7 +1148,17 @@
                 styleSerene: 'Спокойный',
                 styleUpbeat: 'Весёлый',
                 on: 'ВКЛ',
-                off: 'ВЫКЛ'
+                off: 'ВЫКЛ',
+                powerups: 'Бонусы',
+                demolish: 'Удалить',
+                swap: 'Обменять',
+                demolishTip: 'Удалить плитку',
+                swapTip: 'Обменять две плитки',
+                tapToSelect: 'Нажмите на плитку',
+                tapFirst: 'Выберите 1-ю',
+                tapSecond: 'Выберите 2-ю',
+                powerupGained: '+1',
+                cancelSelect: 'Отмена'
             },
             ar: {
                 score: 'النقاط',
@@ -894,7 +1182,17 @@
                 styleSerene: 'هادئ',
                 styleUpbeat: 'مرح',
                 on: 'تشغيل',
-                off: 'إيقاف'
+                off: 'إيقاف',
+                powerups: 'أدوات',
+                demolish: 'إزالة',
+                swap: 'تبديل',
+                demolishTip: 'إزالة مربع',
+                swapTip: 'تبديل مربعين',
+                tapToSelect: 'اختر مربعاً',
+                tapFirst: 'اختر الأول',
+                tapSecond: 'اختر الثاني',
+                powerupGained: '+1',
+                cancelSelect: 'إلغاء'
             },
             it: {
                 score: 'Punti',
@@ -918,7 +1216,17 @@
                 styleSerene: 'Sereno',
                 styleUpbeat: 'Allegro',
                 on: 'SÌ',
-                off: 'NO'
+                off: 'NO',
+                powerups: 'Potenziamenti',
+                demolish: 'Rimuovi',
+                swap: 'Scambia',
+                demolishTip: 'Rimuovi una tessera',
+                swapTip: 'Scambia due tessere',
+                tapToSelect: 'Tocca una tessera',
+                tapFirst: 'Tocca la 1ª',
+                tapSecond: 'Tocca la 2ª',
+                powerupGained: '+1',
+                cancelSelect: 'Annulla'
             }
         };
 
@@ -994,7 +1302,12 @@
             document.getElementById('sfx-label').textContent = t('soundEffects');
             document.getElementById('music-label').textContent = t('backgroundMusic');
             document.getElementById('music-style-label').textContent = t('musicStyle');
+            document.getElementById('powerup-section-title').textContent = t('powerups');
+            document.getElementById('powerup-toggle-label').textContent = t('powerups');
+            document.getElementById('pu-demolish').title = t('demolishTip');
+            document.getElementById('pu-swap').title = t('swapTip');
             updateSoundUI();
+            updatePowerupBar();
 
             // Update settings title based on current sub-page
             if (settingsSubPage === 'how-to-play') {
@@ -1294,10 +1607,13 @@
             var sfxBtn = document.getElementById('sfx-btn');
             var musicBtn = document.getElementById('music-btn');
             var styleSelect = document.getElementById('music-style-select');
+            var puBtn = document.getElementById('powerup-btn');
             sfxBtn.textContent = sfxEnabled ? t('on') : t('off');
             sfxBtn.className = 'sound-toggle-btn' + (sfxEnabled ? ' active' : '');
             musicBtn.textContent = musicEnabled ? t('on') : t('off');
             musicBtn.className = 'sound-toggle-btn' + (musicEnabled ? ' active' : '');
+            puBtn.textContent = powerupsEnabled ? t('on') : t('off');
+            puBtn.className = 'sound-toggle-btn' + (powerupsEnabled ? ' active' : '');
             // Update dropdown value and option labels
             styleSelect.value = currentBgmStyle;
             styleSelect.options[0].textContent = t('styleSerene');
@@ -1325,6 +1641,245 @@
         document.addEventListener('touchstart', unlockAudio, { once: true });
         document.addEventListener('click', unlockAudio, { once: true });
         document.addEventListener('keydown', unlockAudio, { once: true });
+
+        // ===== Power-ups =====
+        var powerupsEnabled = localStorage.getItem('game4096_powerups') === 'true';
+        var puState = { demolish: 0, swap: 2, lastScoreMilestone: 0 };
+        var puSelectMode = null;   // null | 'demolish' | 'swap'
+        var puSwapFirst = null;    // [row, col] of first selected tile for swap
+
+        var puBar = document.getElementById('powerup-bar');
+        var puHint = document.getElementById('powerup-hint');
+        var puDemolishBtn = document.getElementById('pu-demolish');
+        var puSwapBtn = document.getElementById('pu-swap');
+        var puCancelBtn = document.getElementById('pu-cancel');
+
+        function togglePowerups() {
+            powerupsEnabled = !powerupsEnabled;
+            localStorage.setItem('game4096_powerups', powerupsEnabled);
+            updateSoundUI();
+            updatePowerupBar();
+        }
+
+        function updatePowerupBar() {
+            puBar.style.display = powerupsEnabled ? 'flex' : 'none';
+            if (!powerupsEnabled) {
+                cancelPuSelect();
+                return;
+            }
+            // Update counts
+            document.getElementById('pu-demolish-count').textContent = puState.demolish;
+            document.getElementById('pu-demolish-count').className = 'pu-badge' + (puState.demolish === 0 ? ' pu-zero' : '');
+            document.getElementById('pu-swap-count').textContent = puState.swap;
+            document.getElementById('pu-swap-count').className = 'pu-badge' + (puState.swap === 0 ? ' pu-zero' : '');
+
+            // Enable/disable buttons
+            puDemolishBtn.disabled = puState.demolish <= 0 || puSelectMode === 'swap';
+            puSwapBtn.disabled = puState.swap <= 0 || puSelectMode === 'demolish';
+
+            // Active state
+            puDemolishBtn.classList.toggle('pu-active', puSelectMode === 'demolish');
+            puSwapBtn.classList.toggle('pu-active', puSelectMode === 'swap');
+
+            // Cancel button visibility
+            puCancelBtn.style.display = puSelectMode ? 'flex' : 'none';
+
+            // Hint text
+            if (puSelectMode === 'demolish') {
+                puHint.textContent = t('tapToSelect');
+                puHint.className = 'powerup-hint active';
+            } else if (puSelectMode === 'swap') {
+                puHint.textContent = puSwapFirst ? t('tapSecond') : t('tapFirst');
+                puHint.className = 'powerup-hint active';
+            } else {
+                puHint.textContent = '';
+                puHint.className = 'powerup-hint';
+            }
+        }
+
+        function startPuSelect(type) {
+            if (animating) return;
+            if (over && !keepPlaying) return;
+            if (puSelectMode === type) { cancelPuSelect(); return; }
+            puSelectMode = type;
+            puSwapFirst = null;
+            gameBoard.classList.add('selecting');
+            updatePowerupBar();
+        }
+
+        function cancelPuSelect() {
+            puSelectMode = null;
+            puSwapFirst = null;
+            gameBoard.classList.remove('selecting');
+            // Remove any tile-selected classes
+            var selected = tileContainer.querySelectorAll('.tile-selected');
+            for (var i = 0; i < selected.length; i++) selected[i].classList.remove('tile-selected');
+            updatePowerupBar();
+        }
+
+        function handleTileClick(r, c) {
+            if (!puSelectMode) return;
+            if (grid[r][c] === 0) return; // can't select empty cell
+
+            if (puSelectMode === 'demolish') {
+                executeDemolish(r, c);
+            } else if (puSelectMode === 'swap') {
+                if (!puSwapFirst) {
+                    puSwapFirst = [r, c];
+                    // Mark the tile as selected visually
+                    highlightTile(r, c);
+                    updatePowerupBar(); // update hint to "tap second"
+                } else {
+                    if (puSwapFirst[0] === r && puSwapFirst[1] === c) return; // same tile
+                    executeSwap(puSwapFirst[0], puSwapFirst[1], r, c);
+                }
+            }
+        }
+
+        function highlightTile(r, c) {
+            var tiles = tileContainer.children;
+            for (var i = 0; i < tiles.length; i++) {
+                var el = tiles[i];
+                var pos = tilePos(r, c);
+                var elTop = parseFloat(el.style.top);
+                var elLeft = parseFloat(el.style.left);
+                if (Math.abs(elTop - pos.top) < 2 && Math.abs(elLeft - pos.left) < 2) {
+                    el.classList.add('tile-selected');
+                    break;
+                }
+            }
+        }
+
+        function executeDemolish(r, c) {
+            // Find the tile element and animate it
+            var tiles = tileContainer.children;
+            var pos = tilePos(r, c);
+            for (var i = 0; i < tiles.length; i++) {
+                var el = tiles[i];
+                var elTop = parseFloat(el.style.top);
+                var elLeft = parseFloat(el.style.left);
+                if (Math.abs(elTop - pos.top) < 2 && Math.abs(elLeft - pos.left) < 2) {
+                    el.classList.add('tile-demolishing');
+                    break;
+                }
+            }
+
+            // Save undo state
+            previousState = { grid: cloneGrid(grid), score: score, puState: JSON.parse(JSON.stringify(puState)) };
+
+            // Remove tile from grid
+            grid[r][c] = 0;
+            puState.demolish--;
+            puSelectMode = null;
+            gameBoard.classList.remove('selecting');
+
+            setTimeout(function () {
+                renderTiles(null, null);
+                updatePowerupBar();
+                savePuState();
+                saveState();
+            }, 300);
+        }
+
+        function executeSwap(r1, c1, r2, c2) {
+            // Save undo state
+            previousState = { grid: cloneGrid(grid), score: score, puState: JSON.parse(JSON.stringify(puState)) };
+
+            // Animate: move tiles to each other's positions
+            animating = true;
+            var tiles = tileContainer.children;
+            var pos1 = tilePos(r1, c1);
+            var pos2 = tilePos(r2, c2);
+            var transVal = 'top 200ms ease-in-out, left 200ms ease-in-out';
+
+            for (var i = 0; i < tiles.length; i++) {
+                var el = tiles[i];
+                var elTop = parseFloat(el.style.top);
+                var elLeft = parseFloat(el.style.left);
+                el.style.transition = transVal;
+                if (Math.abs(elTop - pos1.top) < 2 && Math.abs(elLeft - pos1.left) < 2) {
+                    el.style.top = pos2.top + 'px';
+                    el.style.left = pos2.left + 'px';
+                } else if (Math.abs(elTop - pos2.top) < 2 && Math.abs(elLeft - pos2.left) < 2) {
+                    el.style.top = pos1.top + 'px';
+                    el.style.left = pos1.left + 'px';
+                }
+            }
+
+            // Swap in grid
+            var tmp = grid[r1][c1];
+            grid[r1][c1] = grid[r2][c2];
+            grid[r2][c2] = tmp;
+            puState.swap--;
+            puSelectMode = null;
+            puSwapFirst = null;
+            gameBoard.classList.remove('selecting');
+
+            setTimeout(function () {
+                animating = false;
+                renderTiles(null, null);
+                updatePowerupBar();
+                savePuState();
+                saveState();
+            }, 220);
+        }
+
+        // Check if player earned a demolish powerup (every 3000 score)
+        function checkPuRewards(scoreBeforeMove) {
+            if (!powerupsEnabled) return;
+            var DEMOLISH_INTERVAL = 3000;
+            var DEMOLISH_MAX = 3;
+            var oldMilestone = Math.floor(scoreBeforeMove / DEMOLISH_INTERVAL);
+            var newMilestone = Math.floor(score / DEMOLISH_INTERVAL);
+            if (newMilestone > oldMilestone && puState.demolish < DEMOLISH_MAX) {
+                var gained = Math.min(newMilestone - oldMilestone, DEMOLISH_MAX - puState.demolish);
+                puState.demolish += gained;
+                puState.lastScoreMilestone = newMilestone * DEMOLISH_INTERVAL;
+                showPuGainedAnim('pu-demolish');
+                savePuState();
+            }
+            updatePowerupBar();
+        }
+
+        function showPuGainedAnim(btnId) {
+            var btn = document.getElementById(btnId);
+            var anim = document.createElement('span');
+            anim.className = 'pu-gained-anim';
+            anim.textContent = t('powerupGained');
+            btn.appendChild(anim);
+            setTimeout(function () { if (anim.parentNode) anim.parentNode.removeChild(anim); }, 900);
+        }
+
+        function savePuState() {
+            localStorage.setItem('game4096_puState', JSON.stringify(puState));
+        }
+
+        function loadPuState() {
+            var saved = localStorage.getItem('game4096_puState');
+            if (saved) {
+                try {
+                    var s = JSON.parse(saved);
+                    puState.demolish = s.demolish || 0;
+                    puState.swap = s.swap || 0;
+                    puState.lastScoreMilestone = s.lastScoreMilestone || 0;
+                } catch (e) {}
+            }
+        }
+
+        function resetPuState() {
+            puState = { demolish: 0, swap: 2, lastScoreMilestone: 0 };
+            puSelectMode = null;
+            puSwapFirst = null;
+            gameBoard.classList.remove('selecting');
+            savePuState();
+            updatePowerupBar();
+        }
+
+        // Event listeners for powerup buttons
+        puDemolishBtn.addEventListener('click', function () { startPuSelect('demolish'); });
+        puSwapBtn.addEventListener('click', function () { startPuSelect('swap'); });
+        puCancelBtn.addEventListener('click', cancelPuSelect);
+        document.getElementById('powerup-btn').addEventListener('click', togglePowerups);
 
         // ===== Game Logic =====
         const SIZE = 4;
@@ -1613,6 +2168,7 @@
             const second = addRandomTile(grid);
             updateScore();
             renderTiles(second ? second : null, null);
+            resetPuState();
             saveState();
         }
 
@@ -1644,6 +2200,7 @@
             if (over && !keepPlaying) return;
             if (animating) return;
             if (settingsOpen) return;
+            if (puSelectMode) return; // block moves during powerup selection
 
             const result = move(grid, dir);
             if (!result.moved) return;
@@ -1651,8 +2208,9 @@
             playMoveSFX();
 
             // Save for undo (before applying move)
+            var scoreBeforeMove = score;
             const oldGrid = cloneGrid(grid);
-            previousState = { grid: oldGrid, score };
+            previousState = { grid: oldGrid, score: score, puState: JSON.parse(JSON.stringify(puState)) };
 
             grid = result.grid;
             score += result.score;
@@ -1662,6 +2220,9 @@
 
             // Animate tiles sliding, then show new tile
             animateMove(oldGrid, result.moves, newTile, result.merges);
+
+            // Check powerup rewards after score update
+            checkPuRewards(scoreBeforeMove);
 
             if (!won && hasWon(grid)) {
                 won = true;
@@ -1679,6 +2240,11 @@
             if (animating) return;
             grid = previousState.grid;
             score = previousState.score;
+            if (previousState.puState) {
+                puState = previousState.puState;
+                savePuState();
+                updatePowerupBar();
+            }
             previousState = null;
             won = false;
             over = false;
@@ -1705,6 +2271,12 @@
                 handleMove(keyMap[e.key]);
             }
 
+            // Escape to cancel powerup selection
+            if (e.key === 'Escape' && puSelectMode) {
+                cancelPuSelect();
+                return;
+            }
+
             // Ctrl+Z for undo
             if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
                 e.preventDefault();
@@ -1727,11 +2299,34 @@
         gameBoard.addEventListener('touchend', function (e) {
             if (settingsOpen) return;
             if (touchStartX == null) return;
-            const dx = e.changedTouches[0].clientX - touchStartX;
-            const dy = e.changedTouches[0].clientY - touchStartY;
+            var endX = e.changedTouches[0].clientX;
+            var endY = e.changedTouches[0].clientY;
+            const dx = endX - touchStartX;
+            const dy = endY - touchStartY;
             touchStartX = null;
 
-            if (Math.abs(dx) < SWIPE_THRESHOLD && Math.abs(dy) < SWIPE_THRESHOLD) return;
+            var isTap = Math.abs(dx) < SWIPE_THRESHOLD && Math.abs(dy) < SWIPE_THRESHOLD;
+
+            if (isTap && puSelectMode) {
+                // Handle as tile selection tap
+                computeSizes();
+                var boardRect = tileContainer.getBoundingClientRect();
+                var x = endX - boardRect.left;
+                var y = endY - boardRect.top;
+                for (var r = 0; r < SIZE; r++) {
+                    for (var c = 0; c < SIZE; c++) {
+                        var pos = tilePos(r, c);
+                        if (x >= pos.left && x <= pos.left + tileSizeW &&
+                            y >= pos.top && y <= pos.top + tileSizeH) {
+                            handleTileClick(r, c);
+                            return;
+                        }
+                    }
+                }
+                return;
+            }
+
+            if (isTap) return;
 
             if (Math.abs(dx) > Math.abs(dy)) {
                 handleMove(dx > 0 ? 2 : 0);
@@ -1776,6 +2371,28 @@
             }
         });
         undoBtn.addEventListener('click', undo);
+
+        // --- Powerup tile selection via click/tap on game board ---
+        gameBoard.addEventListener('click', function (e) {
+            if (!puSelectMode) return;
+            // Find which grid cell was clicked
+            computeSizes();
+            var boardRect = tileContainer.getBoundingClientRect();
+            var x = e.clientX - boardRect.left;
+            var y = e.clientY - boardRect.top;
+
+            // Determine row and col from click position
+            for (var r = 0; r < SIZE; r++) {
+                for (var c = 0; c < SIZE; c++) {
+                    var pos = tilePos(r, c);
+                    if (x >= pos.left && x <= pos.left + tileSizeW &&
+                        y >= pos.top && y <= pos.top + tileSizeH) {
+                        handleTileClick(r, c);
+                        return;
+                    }
+                }
+            }
+        });
 
         // --- Gamepad support (PS5 / Xbox / generic controllers) ---
         var gamepadConnected = false;
@@ -1882,6 +2499,9 @@
         // Detect and apply language before loading game state
         currentLang = detectLanguage();
         applyLanguage(currentLang);
+
+        loadPuState();
+        updatePowerupBar();
 
         if (!loadState()) {
             newGame();
