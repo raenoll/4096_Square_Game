@@ -22,8 +22,14 @@ const config: CapacitorConfig = {
       backgroundColor: '#faf8ef',
     },
   },
+  android: {
+    backgroundColor: '#faf8ef',
+    allowMixedContent: false,
+    overScrollMode: 'never',
+  },
   server: {
     iosScheme: 'capacitor',
+    androidScheme: 'https',
   },
 };
 

@@ -26,6 +26,19 @@ Pods
 # Capacitor
 ios/App/App/public/
 ios/App/Pods/
+android/app/src/main/assets/public/
+android/capacitor-cordova-android-plugins/
+
+# Android build
+android/app/build/
+android/.gradle/
+android/build/
+android/local.properties
+
+# Signing keys
+*.jks
+*.keystore
+keystore.properties
 
 # Build artifacts
 www/
