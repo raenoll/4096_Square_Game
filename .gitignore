@@ -1,3 +1,6 @@
+# Dependencies
+node_modules/
+
 # Xcode
 .DS_Store
 */build/*
@@ -17,8 +20,15 @@ DerivedData
 *.hmap
 *.xccheckout
 
-#CocoaPods
+# CocoaPods
 Pods
+
+# Capacitor
+ios/App/App/public/
+ios/App/Pods/
+
+# Build artifacts
+www/
 
 # Test artifacts
 test-results/
