@@ -1688,7 +1688,12 @@
         function updatePowerupBar() {
             puBar.style.display = powerupsEnabled ? 'flex' : 'none';
             if (!powerupsEnabled) {
-                cancelPuSelect();
+                // Inline cancel logic to avoid infinite recursion with cancelPuSelect()
+                puSelectMode = null;
+                puSwapFirst = null;
+                gameBoard.classList.remove('selecting');
+                var selected = tileContainer.querySelectorAll('.tile-selected');
+                for (var i = 0; i < selected.length; i++) selected[i].classList.remove('tile-selected');
                 return;
             }
             // Update counts
