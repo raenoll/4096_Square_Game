@@ -96,11 +96,6 @@
             margin-bottom: 16px;
         }
 
-        .subtitle {
-            color: #9a948e;
-            font-size: 16px;
-        }
-
         .buttons {
             display: flex;
             align-items: center;
@@ -688,7 +683,6 @@
                 gap: 6px;
             }
 
-            .subtitle { font-size: 13px; }
             .buttons { flex-wrap: wrap; align-items: center; }
             .btn { padding: 6px 10px; font-size: 12px; min-height: 36px; }
             .btn-icon { width: 36px; height: 36px; min-height: 36px; }
@@ -737,7 +731,6 @@
                 </div>
             </div>
             <div class="sub-header">
-                <div class="subtitle" id="subtitle">Merge tiles to reach <strong>4096</strong>!</div>
                 <div class="buttons">
                     <button class="btn" id="undo-btn">Undo</button>
                     <button class="btn" id="new-game-btn">New Game</button>
@@ -871,7 +864,6 @@
             en: {
                 score: 'Score',
                 best: 'Best',
-                subtitle: 'Merge tiles to reach <strong>4096</strong>!',
                 undo: 'Undo',
                 newGame: 'New Game',
                 gameOver: 'Game Over!',
@@ -907,7 +899,6 @@
             'zh-CN': {
                 score: '分数',
                 best: '最佳',
-                subtitle: '合并方块，达到 <strong>4096</strong>！',
                 undo: '撤销',
                 newGame: '新游戏',
                 gameOver: '游戏结束!',
@@ -943,7 +934,6 @@
             'zh-TW': {
                 score: '分數',
                 best: '最佳',
-                subtitle: '合併方塊，達到 <strong>4096</strong>！',
                 undo: '撤銷',
                 newGame: '新遊戲',
                 gameOver: '遊戲結束!',
@@ -979,7 +969,6 @@
             ja: {
                 score: 'スコア',
                 best: 'ベスト',
-                subtitle: 'タイルを合わせて <strong>4096</strong> を目指そう！',
                 undo: '戻す',
                 newGame: '新規ゲーム',
                 gameOver: 'ゲームオーバー!',
@@ -1015,7 +1004,6 @@
             ko: {
                 score: '점수',
                 best: '최고',
-                subtitle: '타일을 합쳐 <strong>4096</strong>을 만드세요!',
                 undo: '되돌리기',
                 newGame: '새 게임',
                 gameOver: '게임 오버!',
@@ -1051,7 +1039,6 @@
             es: {
                 score: 'Puntos',
                 best: 'Mejor',
-                subtitle: '¡Combina fichas para llegar a <strong>4096</strong>!',
                 undo: 'Deshacer',
                 newGame: 'Nuevo juego',
                 gameOver: '¡Fin del juego!',
@@ -1087,7 +1074,6 @@
             fr: {
                 score: 'Score',
                 best: 'Meilleur',
-                subtitle: 'Fusionnez les tuiles pour atteindre <strong>4096</strong> !',
                 undo: 'Annuler',
                 newGame: 'Nouvelle partie',
                 gameOver: 'Partie terminée !',
@@ -1123,7 +1109,6 @@
             de: {
                 score: 'Punkte',
                 best: 'Beste',
-                subtitle: 'Verbinde Kacheln, um <strong>4096</strong> zu erreichen!',
                 undo: 'Rückgängig',
                 newGame: 'Neues Spiel',
                 gameOver: 'Spiel vorbei!',
@@ -1159,7 +1144,6 @@
             pt: {
                 score: 'Pontos',
                 best: 'Melhor',
-                subtitle: 'Combine as peças para chegar a <strong>4096</strong>!',
                 undo: 'Desfazer',
                 newGame: 'Novo jogo',
                 gameOver: 'Fim de jogo!',
@@ -1195,7 +1179,6 @@
             ru: {
                 score: 'Счёт',
                 best: 'Лучший',
-                subtitle: 'Объединяйте плитки, чтобы получить <strong>4096</strong>!',
                 undo: 'Отменить',
                 newGame: 'Новая игра',
                 gameOver: 'Игра окончена!',
@@ -1231,7 +1214,6 @@
             ar: {
                 score: 'النقاط',
                 best: 'الأفضل',
-                subtitle: 'ادمج المربعات للوصول إلى <strong>4096</strong>!',
                 undo: 'تراجع',
                 newGame: 'لعبة جديدة',
                 gameOver: 'انتهت اللعبة!',
@@ -1267,7 +1249,6 @@
             it: {
                 score: 'Punti',
                 best: 'Migliore',
-                subtitle: 'Unisci le tessere per raggiungere <strong>4096</strong>!',
                 undo: 'Annulla',
                 newGame: 'Nuova partita',
                 gameOver: 'Game Over!',
@@ -1342,7 +1323,6 @@
             // Game UI
             document.getElementById('score-label').textContent = t('score');
             document.getElementById('best-label').textContent = t('best');
-            document.getElementById('subtitle').innerHTML = t('subtitle');
             document.getElementById('undo-btn').textContent = t('undo');
             document.getElementById('new-game-btn').textContent = t('newGame');
 
