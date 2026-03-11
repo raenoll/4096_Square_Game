@@ -130,8 +130,13 @@
             border: 1.5px solid #cdc8c0;
         }
 
-        #undo-btn:hover {
+        #undo-btn:hover:not(:disabled) {
             background: #f5f3f0;
+        }
+
+        #undo-btn:disabled {
+            opacity: 0.4;
+            cursor: default;
         }
 
         .btn-icon {
@@ -735,7 +740,7 @@
             </div>
             <div class="sub-header">
                 <div class="buttons">
-                    <button class="btn" id="undo-btn">Undo</button>
+                    <button class="btn" id="undo-btn" disabled>Undo</button>
                     <button class="btn" id="new-game-btn">New Game</button>
                     <button class="btn btn-icon" id="settings-btn" title="Settings">⚙</button>
                 </div>
@@ -1826,6 +1831,7 @@
 
             // Save undo state
             previousState = { grid: cloneGrid(grid), score: score, puState: JSON.parse(JSON.stringify(puState)) };
+            updateUndoBtn();
 
             // Remove tile from grid
             grid[r][c] = 0;
@@ -1844,6 +1850,7 @@
         function executeSwap(r1, c1, r2, c2) {
             // Save undo state
             previousState = { grid: cloneGrid(grid), score: score, puState: JSON.parse(JSON.stringify(puState)) };
+            updateUndoBtn();
 
             // Animate: move tiles to each other's positions
             animating = true;
@@ -2213,6 +2220,10 @@
             overlay.className = 'overlay';
         }
 
+        function updateUndoBtn() {
+            undoBtn.disabled = !previousState;
+        }
+
         // --- Game flow ---
         function newGame() {
             grid = emptyGrid();
@@ -2221,6 +2232,7 @@
             over = false;
             keepPlaying = false;
             previousState = null;
+            updateUndoBtn();
             animating = false;
             hideOverlay();
 
@@ -2247,6 +2259,7 @@
                     over = s.over || false;
                     keepPlaying = s.keepPlaying || false;
                     previousState = null;
+                    updateUndoBtn();
                     updateScore();
                     renderTiles(null, null);
                     if (over) showOverlay(t('gameOver'), false);
@@ -2271,6 +2284,7 @@
             var scoreBeforeMove = score;
             const oldGrid = cloneGrid(grid);
             previousState = { grid: oldGrid, score: score, puState: JSON.parse(JSON.stringify(puState)) };
+            updateUndoBtn();
 
             grid = result.grid;
             score += result.score;
@@ -2306,6 +2320,7 @@
                 updatePowerupBar();
             }
             previousState = null;
+            updateUndoBtn();
             won = false;
             over = false;
             hideOverlay();
