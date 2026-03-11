@@ -103,6 +103,7 @@
 
         .buttons {
             display: flex;
+            align-items: center;
             gap: 8px;
         }
 
@@ -117,6 +118,9 @@
             cursor: pointer;
             transition: all 0.15s;
             touch-action: manipulation;
+            min-height: 42px;
+            white-space: nowrap;
+            box-sizing: border-box;
         }
 
         .btn:hover {
@@ -134,7 +138,6 @@
         }
 
         .btn-icon {
-            padding: 10px 14px;
             font-size: 18px;
             line-height: 1;
             background: #fff;
@@ -142,11 +145,13 @@
             border-radius: 50%;
             width: 42px;
             height: 42px;
+            min-height: 42px;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 0;
             border: 1.5px solid #d0ccc6;
+            flex-shrink: 0;
         }
 
         .btn-icon:hover {
@@ -684,8 +689,9 @@
             }
 
             .subtitle { font-size: 13px; }
-            .buttons { flex-wrap: wrap; }
-            .btn { padding: 6px 10px; font-size: 12px; }
+            .buttons { flex-wrap: wrap; align-items: center; }
+            .btn { padding: 6px 10px; font-size: 12px; min-height: 36px; }
+            .btn-icon { width: 36px; height: 36px; min-height: 36px; }
 
             .powerup-bar {
                 flex-direction: column;
